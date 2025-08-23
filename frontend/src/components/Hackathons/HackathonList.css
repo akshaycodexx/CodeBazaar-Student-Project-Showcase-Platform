@@ -1,22 +1,26 @@
 /* Upcoming Section */
 .upcoming {
   flex: 1;
-  background-color: #ffffff;
-  padding: 1rem;
+  background: url("/images/bg.jpg") no-repeat center center; /* background image */
+  background-size: cover;
+  padding: 2rem 1rem;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   margin: 1rem auto;
   max-width: 1200px;
+  min-height: 100vh; /* pura screen cover karega */
+  display: grid;
+  gap: 1.5rem;
 }
 
 /* Section Heading */
 .upcoming h2 {
-  color: #2c2c7c;
+  color: #ffffff;
   margin-bottom: 1.5rem;
   text-align: center;
-  font-size: 1.6rem;
-  font-weight: 600;
+  font-size: 1.8rem;
+  font-weight: 700;
   position: relative;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
 }
 
 .upcoming h2::after {
@@ -24,17 +28,16 @@
   display: block;
   width: 60px;
   height: 3px;
-  background: #2c2c7c;
+  background: #ffffff;
   margin: 0.5rem auto 0;
   border-radius: 5px;
 }
 
 /* Card Container */
 .card {
-  margin-bottom: 1.5rem;
   border-radius: 12px;
-  background-color: #f5f7ff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.9); /* halka transparent background */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
@@ -42,7 +45,7 @@
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
 }
 
 /* Card Image */
@@ -63,53 +66,34 @@
 
 .card-content h3 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #1f1f5c;
 }
 
 .card-content p {
   margin-top: 0.5rem;
-  font-size: 0.95rem;
-  color: #555;
-  line-height: 1.4;
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.5;
 }
 
 /* Responsive Layout */
 @media (max-width: 992px) {
-  .upcoming {
-    padding: 0.8rem;
-  }
-
   .card img {
     height: 180px;
-  }
-
-  .card-content h3 {
-    font-size: 1.1rem;
   }
 }
 
 @media (max-width: 768px) {
-  .upcoming {
-    width: 100%;
-    padding: 0.8rem;
-  }
-
-  .card {
-    margin-bottom: 1rem;
-  }
-
   .card img {
     height: 160px;
   }
-
   .card-content h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
-
   .card-content p {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -117,12 +101,10 @@
   .card img {
     height: 140px;
   }
-
   .card-content h3 {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
-
   .card-content p {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 }
