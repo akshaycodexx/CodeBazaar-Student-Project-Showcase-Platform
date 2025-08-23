@@ -14,6 +14,7 @@ import ProjectCard from "./components/Project/ProjectCard";
 import AllProject from "./components/Project/App"
 import ProjectCardPage from "./components/Project/ProjectCardPage";
 import ProjectDetails from "./components/Project/view-project/ProjectDetails";
+import HackathonDetail from "./components/Hackathons/HackathonDetail";
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -59,6 +60,7 @@ function App() {
 
         <Route path="/hack" element={<Hackathon/>} />
         <Route path="/hackSignup" element={<HackathonCreateForm/>} />
+        <Route path="/hackathon/:id" element={<HackathonDetail />} />
 
 
         {/* //projects */}
