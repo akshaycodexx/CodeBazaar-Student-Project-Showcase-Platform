@@ -1,110 +1,91 @@
-/* Upcoming Section */
-.upcoming {
-  flex: 1;
-  background: url("/images/bg.jpg") no-repeat center center; /* background image */
-  background-size: cover;
-  padding: 2rem 1rem;
+.hackathons {
+  width: 100%;
+  padding: 2rem;
+  background: #f8faff;
   border-radius: 12px;
-  margin: 1rem auto;
-  max-width: 1200px;
-  min-height: 100vh; /* pura screen cover karega */
+}
+
+.hackathons h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2c2c7c;
+}
+
+.hackathon-list {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
-/* Section Heading */
-.upcoming h2 {
-  color: #ffffff;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  font-size: 1.8rem;
-  font-weight: 700;
-  position: relative;
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-}
-
-.upcoming h2::after {
-  content: "";
-  display: block;
-  width: 60px;
-  height: 3px;
-  background: #ffffff;
-  margin: 0.5rem auto 0;
-  border-radius: 5px;
-}
-
-/* Card Container */
-.card {
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.9); /* halka transparent background */
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+.hackathon-card {
+  background: #fff;
+  border-radius: 14px;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+.hackathon-card:hover {
+  transform: translateY(-6px);
 }
 
-/* Card Image */
-.card img {
+.hackathon-image {
   width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-  border-bottom: 2px solid #e4e6f7;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
 }
 
-/* Card Content */
-.card-content {
+.hackathon-content {
   padding: 1rem;
-  color: #2c2c7c;
   text-align: center;
+  flex: 1;
 }
 
-.card-content h3 {
-  margin: 0;
-  font-size: 1.3rem;
+.hackathon-content h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.hackathon-content p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+
+.hackathon-date {
+  display: block;
+  font-size: 0.85rem;
+  color: #2c2c7c;
   font-weight: 600;
-  color: #1f1f5c;
+  margin-bottom: 1rem;
 }
 
-.card-content p {
-  margin-top: 0.5rem;
-  font-size: 1rem;
-  color: #333;
-  line-height: 1.5;
+.apply-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4a6cf7, #3a4ed5);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-/* Responsive Layout */
-@media (max-width: 992px) {
-  .card img {
-    height: 180px;
-  }
+.apply-btn:hover {
+  background: linear-gradient(135deg, #3a4ed5, #2a34b5);
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-  .card img {
-    height: 160px;
+  .hackathons {
+    padding: 1rem;
   }
-  .card-content h3 {
-    font-size: 1.1rem;
-  }
-  .card-content p {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .card img {
-    height: 140px;
-  }
-  .card-content h3 {
+  .hackathon-content h3 {
     font-size: 1rem;
-  }
-  .card-content p {
-    font-size: 0.85rem;
   }
 }
