@@ -5,6 +5,7 @@ const {
   createHackathon,
   getAllHackathons,
   updateHackathon,
+  getHackathonById,   
   deleteHackathon,
 } = require("../controllers/hackathonController");
 
@@ -13,6 +14,7 @@ const upload = require("../middleware/multer");
 
 // 📌 Public Route
 router.get("/", getAllHackathons);
+router.get("/:id", getHackathonById);
 
 // 📌 Protected Routes
 router.post(
