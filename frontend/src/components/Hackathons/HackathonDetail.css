@@ -2,13 +2,13 @@
 
 /* --- Design System Variables --- */
 :root {
-  --primary-color: #6366F1; /* A nice Indigo */
+  --primary-color: #6366F1;
   --primary-hover: #4F46E5;
   --background-light: #F9FAFB;
   --text-headings: #1F2937;
   --text-body: #4B5563;
   --border-color: #E5E7EB;
-  --font-family: 'Inter', sans-serif; /* Recommended: Add Inter from Google Fonts */
+  --font-family: 'Inter', sans-serif;
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --border-radius: 12px;
@@ -17,16 +17,30 @@
 .hackathon-detail-page {
   background-color: var(--background-light);
   font-family: var(--font-family);
+  min-height: 100vh;
 }
 
-/* --- Loading State --- */
-.loading-container {
+/* --- Loading and Error States --- */
+.status-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 80vh;
+  text-align: center;
+  padding: 2rem;
   color: var(--text-body);
+}
+
+.status-container h2 {
+    font-size: 2rem;
+    color: var(--text-headings);
+    margin-bottom: 0.5rem;
+}
+
+.status-container p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
 }
 
 .spinner {
@@ -44,7 +58,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* --- 1. Hero Section --- */
+/* --- Hero Section --- */
 .hero-section {
   height: 55vh;
   position: relative;
@@ -53,16 +67,14 @@
   justify-content: center;
   text-align: center;
   color: white;
+  background-color: #333; /* Fallback color */
   background-size: cover;
   background-position: center;
 }
 
 .hero-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0; width: 100%; height: 100%;
   background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 100%);
 }
 
@@ -75,7 +87,6 @@
 .hero-title {
   font-size: 3.5rem;
   font-weight: 800;
-  margin: 0;
   text-shadow: 0 3px 6px rgba(0,0,0,0.3);
 }
 
@@ -86,6 +97,7 @@
   font-weight: 500;
 }
 
+/* --- Shared Button Style --- */
 .btn-primary {
   display: inline-block;
   background-color: var(--primary-color);
@@ -112,10 +124,10 @@
   padding: 1rem 2.5rem;
 }
 
-/* --- 2. Main Content Layout --- */
+/* --- Main Content Layout --- */
 .detail-container {
   max-width: 1200px;
-  margin: -4rem auto 4rem auto; /* Pulls content up into the hero space */
+  margin: -4rem auto 4rem auto;
   padding: 0 1.5rem;
   display: grid;
   grid-template-columns: 1fr 350px;
@@ -136,11 +148,9 @@
 .detail-section {
   margin-bottom: 2.5rem;
 }
-
 .detail-section:last-child {
   margin-bottom: 0;
 }
-
 .detail-section h2 {
   font-size: 1.8rem;
   font-weight: 700;
@@ -152,13 +162,12 @@
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.75rem;
 }
-
 .detail-section p {
   line-height: 1.7;
   color: var(--text-body);
 }
 
-/* --- 3. Sticky Sidebar --- */
+/* --- Sidebar --- */
 .sidebar {
   position: sticky;
   top: 2rem;
@@ -182,10 +191,8 @@
 
 .info-list {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 0; margin: 0;
 }
-
 .info-list li {
   display: flex;
   align-items: flex-start;
@@ -193,24 +200,20 @@
   margin-bottom: 1.25rem;
   font-size: 1rem;
 }
-
 .info-list li svg {
   flex-shrink: 0;
   font-size: 1.25rem;
   color: var(--primary-color);
   margin-top: 3px;
 }
-
 .info-list li div {
   display: flex;
   flex-direction: column;
 }
-
 .info-list li strong {
   font-weight: 600;
   color: var(--text-headings);
 }
-
 .info-list li span {
   color: var(--text-body);
 }
@@ -223,18 +226,15 @@
   padding-bottom: 0.9rem;
 }
 
-/* --- Animations --- */
+/* --- Animations & Responsive --- */
 @keyframes fadeInDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-/* --- Responsive Design --- */
 @media (max-width: 950px) {
   .detail-container {
     grid-template-columns: 1fr;
@@ -244,12 +244,7 @@
     margin-top: 2rem;
   }
 }
-
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.5rem;
-  }
-  .main-content, .sidebar-card {
-    padding: 1.5rem;
-  }
+  .hero-title { font-size: 2.5rem; }
+  .main-content, .sidebar-card { padding: 1.5rem; }
 }

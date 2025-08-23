@@ -1,67 +1,96 @@
 // src/components/HackathonDetail.jsx
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { FiCalendar, FiMapPin, FiAward, FiUsers } from "react-icons/fi"; // Import icons
+import { useParams, Link } from "react-router-dom";
+import { FiCalendar, FiMapPin, FiAward, FiUsers } from "react-icons/fi";
 import "./HackathonDetail.css";
 
 function HackathonDetail() {
   const { id } = useParams();
   const [hackathon, setHackathon] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    // Reset states for new ID
+    setHackathon(null);
+    setLoading(true);
+    setError(null);
+    
     const fetchHackathon = async () => {
       try {
         const res = await fetch(`${API_URL}/api/hackathons/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch hackathon");
+        // If the server responds with 404, res.ok will be false
+        if (!res.ok) {
+          throw new Error("Hackathon not found (404)");
+        }
         const data = await res.json();
         setHackathon(data);
       } catch (err) {
         console.error("Error fetching hackathon:", err);
+        setError(err.message); // Store the error message
+      } finally {
+        setLoading(false); // Stop loading in any case
       }
     };
+    
     fetchHackathon();
   }, [id, API_URL]);
 
-  if (!hackathon) {
+  // State 1: Loading
+  if (loading) {
     return (
-      <div className="loading-container">
+      <div className="status-container">
         <div className="spinner"></div>
         <p>Loading Hackathon Details...</p>
       </div>
     );
   }
 
-  // Destructure all potential properties for a richer UI
+  // State 2: Error or Not Found
+  if (error) {
+    return (
+      <div className="status-container">
+        <h2>Oops! Hackathon Not Found</h2>
+        <p>We couldn't find the hackathon you were looking for.</p>
+        <Link to="/" className="btn-primary">
+          &larr; Back to All Hackathons
+        </Link>
+      </div>
+    );
+  }
+  
+  // State 3: Success (hackathon is not null)
+  if (!hackathon) return null; // Should not happen if logic is correct, but a safe fallback
+
+  // Destructure data with default values to prevent crashes
   const {
-    title,
-    description,
-    coverImage, // Using 'coverImage' as it's more common
+    title = "Untitled Hackathon",
+    description = "No description available.",
+    coverImage, // Use the field name from your backend
     startDate,
     endDate,
-    location,
-    prizes, // Renamed from 'rewards'
-    registrationLink,
-    teamSizeMin = 1, // Providing default values
+    location = "Online",
+    prizes = "To be announced",
+    registrationLink = "#",
+    teamSizeMin = 1,
     teamSizeMax = 5,
   } = hackathon;
 
   return (
     <div className="hackathon-detail-page">
-      {/* --- 1. Hero Section --- */}
       <header className="hero-section" style={{ backgroundImage: `url(${coverImage})` }}>
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <h1 className="hero-title">{title}</h1>
           <p className="hero-subtitle">The ultimate innovation challenge awaits.</p>
-          <a href={registrationLink || '#'} target="_blank" rel="noopener noreferrer" className="btn-primary hero-btn">
+          <a href={registrationLink} target="_blank" rel="noopener noreferrer" className="btn-primary hero-btn">
             Register Now
           </a>
         </div>
       </header>
 
-      {/* --- 2. Main Content Area (Two-Column Layout) --- */}
       <div className="detail-container">
         <main className="main-content">
           <section className="detail-section">
@@ -71,13 +100,10 @@ function HackathonDetail() {
 
           <section className="detail-section">
             <h2><FiAward /> Prizes & Rewards</h2>
-            <p>{prizes || 'Details about prizes will be announced soon.'}</p>
+            <p>{prizes}</p>
           </section>
-
-          {/* You can add more sections here like Rules, Judging Criteria, etc. */}
         </main>
 
-        {/* --- 3. Sticky Sidebar --- */}
         <aside className="sidebar">
           <div className="sidebar-card">
             <h3 className="sidebar-title">Hackathon Info</h3>
@@ -86,7 +112,9 @@ function HackathonDetail() {
                 <FiCalendar />
                 <div>
                   <strong>Dates</strong>
-                  <span>{new Date(startDate).toLocaleDateString()} - {new Date(endDate).toLocaleDateString()}</span>
+                  <span>
+                    {new Date(startDate).toLocaleDateString()} - {new Date(endDate).toLocaleDateString()}
+                  </span>
                 </div>
               </li>
               <li>
@@ -104,7 +132,7 @@ function HackathonDetail() {
                 </div>
               </li>
             </ul>
-            <a href={registrationLink || '#'} target="_blank" rel="noopener noreferrer" className="btn-primary sidebar-btn">
+            <a href={registrationLink} target="_blank" rel="noopener noreferrer" className="btn-primary sidebar-btn">
               Join The Challenge
             </a>
           </div>
