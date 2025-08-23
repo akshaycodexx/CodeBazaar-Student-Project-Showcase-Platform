@@ -25,25 +25,34 @@
   border-radius: 10px;
   width: 280px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
 }
 
 .testimonial-photo {
   height: 80px;
   width: 80px;
   border-radius: 50%;
-  background-color: #d0dbff;
+  overflow: hidden;          /* ✅ photo circle ke andar cut hoga */
   margin: 0 auto 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: #4f6de4;
+}
+
+.testimonial-photo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;         /* ✅ image circle ke andar fit hogi */
+  display: block;
 }
 
 .testimonial-feedback {
   font-size: 1rem;
   color: #333;
   margin: 1rem 0;
+  font-style: italic;
+  line-height: 1.5;
 }
 
 .testimonial-name {
