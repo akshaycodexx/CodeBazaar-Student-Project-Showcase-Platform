@@ -5,11 +5,11 @@ import './HackathonList.css';
 function HackathonList() {
   const [hackathons, setHackathons] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchHackathons = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/hackathons', {
+        const res = await fetch(`${API_URL}/api/hackathons`, {
           method: 'GET',
           credentials: 'include', // important if using cookies
         });
