@@ -1,156 +1,164 @@
-/* src/components/ProjectCard.css */
 
-/* --- The Main Horizontal Card --- */
 .project-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 900px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-.project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  border-color: #d1d5db;
-}
-
-/* --- Left Side: All Content --- */
-.card-content-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-grow: 1; /* This makes the left side take up available space */
-  min-width: 0; /* Important for flexbox to handle text overflow */
-}
-
-.project-logo {
-  width: 64px;
-  height: 64px;
   border-radius: 12px;
+  padding: 24px;
+  margin: 20px auto;
+  width: 95%;
+  max-width: 1100px;
+  min-height: 180px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.project-header {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
   object-fit: cover;
-  flex-shrink: 0; /* Prevents the logo from shrinking */
+  border: 1px solid #ccc;
 }
 
-.project-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.project-details h3 {
-  font-size: 18px;
+.project-info h3 {
+  font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  padding-top: 1rem;
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* Adds '...' if title is too long */
+  color: #111827;
 }
 
-.project-meta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 13px;
+.project-info p {
+  font-size: 15px;
   color: #6b7280;
+  margin: 6px 0 8px 0;
 }
 
 .project-owner {
   display: flex;
   align-items: center;
-  gap: 6px;
+  margin-top: 25px;
+  gap: 10px;
+  font-size: 14px;
+  color: #374151;
 }
 
-.owner-avatar {
-  width: 24px;
-  height: 24px;
+.project-owner img {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid #e5e7eb;
 }
 
-.star-rating {
+.owner-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.owner-name {
+  font-weight: 500;
+  color: #111827;
+  font-size: 14px;
+}
+
+.owner-role {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #6b7280;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.star {
+  color: #f59e0b;
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #f59e0b; /* Amber color */
-  font-weight: 500;
 }
 
-.tag {
+.tags {
+  font-size: 12px;
   background-color: #f3f4f6;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #4b5563;
 }
 
-/* --- Right Side: Buttons --- */
-.card-actions-right {
+.project-actions {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0; /* Prevents this section from shrinking */
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
 }
 
-.view-details-btn,
 .purchase-btn,
-.like-btn {
+.view-btn {
   font-size: 14px;
   padding: 8px 14px;
-  font-weight: 600;
-  border-radius: 8px;
+  font-weight: 500;
+  border-radius: 6px;
   cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.view-details-btn {
-  background-color: #f9fafb;
-  color: #374151;
-  border-color: #d1d5db;
-}
-.view-details-btn:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
+  border: none;
 }
 
 .purchase-btn {
-  background-color: #4f46e5;
+  background-color: #2563eb;
   color: white;
+  border: 1px solid transparent;
 }
+
 .purchase-btn:hover {
-  background-color: #4338ca;
+  background-color: #1e40af;
+}
+
+.view-btn {
+  background-color: #f0f9ff;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.view-btn:hover {
+  background-color: #dbeafe;
 }
 
 .like-btn {
-  background-color: transparent;
-  color: #9ca3af;
-  padding: 8px;
+  background: transparent;
   border: none;
-}
-.like-btn:hover {
-  color: #ef4444; /* Red color on hover */
+  cursor: pointer;
+  font-size: 20px;
+  padding-top: 6px;
+  color: #ef4444;
 }
 
-/* --- Responsive for Mobile --- */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .project-card {
     flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
+    /* align-items: flex-start; */
+    align-items: flex-start;
+    padding: 16px;
   }
-  .card-actions-right {
-    padding-top: 16px;
-    border-top: 1px solid #f3f4f6;
-    justify-content: space-between;
+
+  .project-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
   }
 }
