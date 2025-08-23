@@ -60,7 +60,8 @@ function App() {
 
         <Route path="/hack" element={<Hackathon/>} />
         <Route path="/hackSignup" element={<HackathonCreateForm/>} />
-        <Route path="/hackathon/:id" element={<HackathonDetail />} />
+        <Route path="/hackathons/:id" element={<HackathonDetail />} />
+
 
 
         {/* //projects */}
