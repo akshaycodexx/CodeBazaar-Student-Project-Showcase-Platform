@@ -1,0 +1,75 @@
+.hackathon-detail {
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.hackathon-banner img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.hackathon-content {
+  padding: 2rem;
+  text-align: left;
+}
+
+.hackathon-content h1 {
+  font-size: 2rem;
+  color: #2c2c7c;
+  margin-bottom: 1rem;
+}
+
+.hackathon-content .description {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.hackathon-info {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.hackathon-info p {
+  margin: 0.5rem 0;
+}
+
+.hackathon-extra {
+  background: #f5f7ff;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.hackathon-extra h3 {
+  margin-bottom: 0.5rem;
+  color: #2c2c7c;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+  .hackathon-content {
+    padding: 1rem;
+  }
+
+  .hackathon-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .hackathon-banner img {
+    height: 200px;
+  }
+}
