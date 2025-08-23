@@ -1,50 +1,128 @@
+/* Upcoming Section */
 .upcoming {
   flex: 1;
   background-color: #ffffff;
-  padding: 0.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin: 1rem auto;
+  max-width: 1200px;
 }
+
+/* Section Heading */
 .upcoming h2 {
   color: #2c2c7c;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  position: relative;
 }
+
+.upcoming h2::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: #2c2c7c;
+  margin: 0.5rem auto 0;
+  border-radius: 5px;
+}
+
+/* Card Container */
 .card {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   border-radius: 12px;
   background-color: #f5f7ff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  padding: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Card Image */
 .card img {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
   display: block;
+  border-bottom: 2px solid #e4e6f7;
 }
+
+/* Card Content */
 .card-content {
   padding: 1rem;
   color: #2c2c7c;
   text-align: center;
 }
+
 .card-content h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f1f5c;
 }
+
 .card-content p {
   margin-top: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #555;
+  line-height: 1.4;
+}
+
+/* Responsive Layout */
+@media (max-width: 992px) {
+  .upcoming {
+    padding: 0.8rem;
+  }
+
+  .card img {
+    height: 180px;
+  }
+
+  .card-content h3 {
+    font-size: 1.1rem;
+  }
 }
 
 @media (max-width: 768px) {
   .upcoming {
     width: 100%;
-    text-align: center;
+    padding: 0.8rem;
   }
-  .card-content {
-    text-align: center;
+
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .card img {
+    height: 160px;
+  }
+
+  .card-content h3 {
+    font-size: 1rem;
+  }
+
+  .card-content p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card img {
+    height: 140px;
+  }
+
+  .card-content h3 {
+    font-size: 0.95rem;
+  }
+
+  .card-content p {
+    font-size: 0.8rem;
   }
 }
