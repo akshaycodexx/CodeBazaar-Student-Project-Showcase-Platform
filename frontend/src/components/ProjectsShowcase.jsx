@@ -12,12 +12,16 @@ function ProjectsShowcase() {
           withCredentials: true,
         });
 
-        let allProjects = response.data || [];
+        const data = response.data;
+        let allProjects = Array.isArray(data) ? data : (data.projects || []);
+
         // Randomly shuffle & take only 2
-        const randomtwo = allProjects
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 2);
-        setProject(randomtwo);
+        if (Array.isArray(allProjects)) {
+          const randomtwo = [...allProjects] // copy before sort
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 2);
+          setProject(randomtwo);
+        }
       } catch (error) {
         console.error(`project fetching error ${error}`);
       }

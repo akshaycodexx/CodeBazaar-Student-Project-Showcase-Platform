@@ -45,6 +45,17 @@ function App() {
   const [user, setuser] = useState(null);
   const [tutorials, setTutorials] = useState([]);
 
+  const getuser = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/check-auth-status`, { withCredentials: true });
+      if (res.data.isLoggedIn) {
+        setuser(res.data.user);
+      }
+    } catch (err) {
+      console.log("Not logged in");
+    }
+  };
+
   const fetchTutorials = async () => {
     try {
       const res = await axios.get(`${API_URL}/api/photos`, { withCredentials: true });
