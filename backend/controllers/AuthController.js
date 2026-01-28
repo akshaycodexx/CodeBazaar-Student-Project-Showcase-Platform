@@ -202,4 +202,19 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { Signup, signin, Logout, updateProfile };
+// ========================
+//     GET USER BY ID (Public)
+// ========================
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password -email -mobile"); // Exclude sensitive info
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch user" });
+  }
+};
+
+module.exports = { Signup, signin, Logout, updateProfile, getUserById };

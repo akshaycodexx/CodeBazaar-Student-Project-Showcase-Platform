@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Signup, signin, Logout, updateProfile } = require("../controllers/AuthController");
+const { Signup, signin, Logout, updateProfile, getUserById } = require("../controllers/AuthController");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -40,5 +40,8 @@ router.put(
   upload.single("profilePicture"),
   updateProfile
 );
+
+// Get User Public Profile
+router.get("/user/:id", getUserById);
 
 module.exports = router;

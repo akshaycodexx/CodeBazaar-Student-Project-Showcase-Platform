@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import "./ProjectCard.css";
 
 const ProjectCard = ({ project }) => {
+  const navigate = useNavigate();
   return (
     <div className="project-card">
       <div className="card-header">
@@ -13,10 +15,10 @@ const ProjectCard = ({ project }) => {
         </div>
       </div>
 
-      <div className="author-section">
-        <img src={project.logoUrl} alt="author" className="author-img" />
+      <div className="author-section" onClick={() => navigate(`/profile/${project.owner._id}`)} style={{ cursor: 'pointer' }}>
+        <img src={project.owner.profilePicture || "https://placehold.co/50"} alt="author" className="author-img" />
         <div>
-          <h4>{project.owner}</h4>
+          <h4>{project.owner.username}</h4>
           <p className="verified">✔ Verified</p>
         </div>
       </div>

@@ -52,11 +52,11 @@ const ProjectCard = ({ project, user }) => {
         </div>
 
         <div className="border-t border-neutral-100 pt-4 flex items-center justify-between mt-auto">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-neutral-200 overflow-hidden">
+          <div className="flex items-center gap-2 group/owner cursor-pointer" onClick={(e) => { e.stopPropagation(); navigate(`/profile/${project.owner?._id}`) }}>
+            <div className="w-6 h-6 rounded-full bg-neutral-200 overflow-hidden ring-1 ring-neutral-100 group-hover/owner:ring-primary transition-all">
               {project.owner?.profilePicture && <img src={project.owner.profilePicture} alt="Owner" className="w-full h-full object-cover" />}
             </div>
-            <span className="text-xs font-medium text-neutral-700">{project.owner?.username || "Student"}</span>
+            <span className="text-xs font-medium text-neutral-700 group-hover/owner:text-primary transition-colors">{project.owner?.username || "Student"}</span>
           </div>
 
           <div className="flex items-center gap-3">

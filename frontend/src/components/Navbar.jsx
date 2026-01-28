@@ -32,9 +32,9 @@ function Navbar({ user, setuser }) {
   const navLinks = [
     { name: 'Projects', path: '/getallprojects' },
     { name: 'Hackathons', path: '/hack' },
-    { name: 'Pricing', path: '#' },
-    { name: 'Mentorship', path: '#' },
-    { name: 'Recruiters Panel', path: '#' },
+    { name: 'Pricing', path: '/pricing' },
+    { name: 'Mentorship', path: '/mentorship' },
+    { name: 'Recruiters Panel', path: '/recruiters' },
   ];
 
   return (

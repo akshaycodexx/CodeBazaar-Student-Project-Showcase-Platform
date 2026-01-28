@@ -18,6 +18,10 @@ import ProjectDetails from "./components/Project/view-project/ProjectDetails";
 import HackathonDetail from "./components/Hackathons/HackathonDetail";
 import EditProfile from "./components/auth/EditProfile";
 import Dashboard from "./components/Dashboard/Dashboard";
+import Pricing from "./components/Pricing";
+import Mentorship from "./components/Mentorship/Mentorship";
+import RecruitersPanel from "./components/Recruiter/RecruitersPanel";
+import UserProfile from "./components/Profile/UserProfile";
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -60,8 +64,13 @@ function App() {
         <Route path="/signin" element={<Signin setuser={setuser} />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/upload" element={<TutorialUploadForm />} />
+
         <Route path="/edit-profile" element={<EditProfile user={user} setuser={setuser} />} />
         <Route path="/dashboard" element={<Dashboard user={user} />} />
+        <Route path="/pricing" element={<Pricing user={user} />} />
+        <Route path="/mentorship" element={<Mentorship />} />
+        <Route path="/recruiters" element={<RecruitersPanel />} />
+        <Route path="/profile/:userId" element={<UserProfile />} />
 
 
         <Route path="/hack" element={<Hackathon />} />
