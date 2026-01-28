@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
+import { Toaster } from 'react-hot-toast';
 
 import Navbar from "./components/Navbar";
 import Signin from "./components/auth/Signin";
@@ -15,6 +16,8 @@ import AllProject from "./components/Project/App"
 import ProjectCardPage from "./components/Project/ProjectCardPage";
 import ProjectDetails from "./components/Project/view-project/ProjectDetails";
 import HackathonDetail from "./components/Hackathons/HackathonDetail";
+import EditProfile from "./components/auth/EditProfile";
+import Dashboard from "./components/Dashboard/Dashboard";
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -50,29 +53,32 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toaster position="top-right" />
       <Navbar user={user} setuser={setuser} />
       <Routes>
-        <Route path="/" element={<MainPage tutorials={tutorials} setTutorials={setTutorials} user={user} /> } />
+        <Route path="/" element={<MainPage tutorials={tutorials} setTutorials={setTutorials} user={user} />} />
         <Route path="/signin" element={<Signin setuser={setuser} />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/upload" element={<TutorialUploadForm/>} />
+        <Route path="/upload" element={<TutorialUploadForm />} />
+        <Route path="/edit-profile" element={<EditProfile user={user} setuser={setuser} />} />
+        <Route path="/dashboard" element={<Dashboard user={user} />} />
 
 
-        <Route path="/hack" element={<Hackathon/>} />
-        <Route path="/hackSignup" element={<HackathonCreateForm/>} />
+        <Route path="/hack" element={<Hackathon />} />
+        <Route path="/hackSignup" element={<HackathonCreateForm />} />
         <Route path="/hackathons/:id" element={<HackathonDetail />} />
 
 
 
         {/* //projects */}
-        <Route path="/projectUpload" element={<UploadProject/>}/>
-        <Route path="/getallprojects" element={<AllProject/>} />
-        
+        <Route path="/projectUpload" element={<UploadProject user={user} />} />
+        <Route path="/getallprojects" element={<AllProject user={user} />} />
+
         {/* //view project */}
         {/* //If using React Router, in App.jsx */}
         <Route path="/projects/:id" element={<ProjectDetails />} />
 
-        
+
       </Routes>
     </BrowserRouter>
   );

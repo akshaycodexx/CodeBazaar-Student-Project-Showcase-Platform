@@ -3,38 +3,50 @@ const Hackathon = require("../models/Hackrathon/HostModel");
 // @desc Create hackathon
 exports.createHackathon = async (req, res) => {
   try {
-    const {title,hostName, ...restField}=req.body;
+    const { title, hostName, ...restField } = req.body;
 
     //upload cover image or logo image
-    const coverImage=req.files?.coverImage?.[0]?.path;
-    const logoImage=req.files?.logoImage?.[0]?.path;
+    const coverImage = req.files?.coverImage?.[0]?.path;
+    const logoImage = req.files?.logoImage?.[0]?.path;
 
-    if(!coverImage || !logoImage){
-      return res.status(400).json({message:"both image are required!!"});
+    if (!coverImage || !logoImage) {
+      return res.status(400).json({ message: "both image are required!!" });
     }
 
-        const hackathon= await Hackathon.create({
-          title,
-          hostName,
-          ...restField,
-          coverImage,
-          logoImage,
-          createdBy:req.user._id
-        })
-        res.status(201).json(hackathon);
-
-
+    const hackathon = await Hackathon.create({
+      title,
+      hostName,
+      ...restField,
+      coverImage,
+      logoImage,
+      createdBy: req.user._id,
+    });
+    res.status(201).json(hackathon);
   } catch (error) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
   }
-      
 };
 
-// @desc Get all hackathons
+// @desc Get all hackathons with Pagination
 exports.getAllHackathons = async (req, res) => {
   try {
-    const hackathons = await Hackathon.find().sort({ createdAt: -1 });
-    res.status(200).json(hackathons);
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+
+    const hackathons = await Hackathon.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit))
+      .lean(); // Optimization
+
+    const total = await Hackathon.countDocuments();
+
+    res.status(200).json({
+      hackathons,
+      totalPages: Math.ceil(total / limit),
+      currentPage: Number(page),
+      totalHackathons: total,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -43,7 +55,7 @@ exports.getAllHackathons = async (req, res) => {
 // @desc Get single hackathon by ID
 exports.getHackathonById = async (req, res) => {
   try {
-    const hackathon = await Hackathon.findById(req.params.id);
+    const hackathon = await Hackathon.findById(req.params.id).lean();
     if (!hackathon) return res.status(404).json({ message: "Not found" });
     res.status(200).json(hackathon);
   } catch (err) {
@@ -62,7 +74,9 @@ exports.updateHackathon = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    const updated = await Hackathon.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updated = await Hackathon.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.status(200).json(updated);
   } catch (err) {
     res.status(400).json({ message: err.message });

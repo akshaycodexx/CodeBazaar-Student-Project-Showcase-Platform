@@ -126,8 +126,9 @@ const signin = async (req, res) => {
     // Set token in HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: true, // Always true for cross-site (Vercel/Render compatibility)
       sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
     // Send user data back
@@ -152,8 +153,53 @@ const signin = async (req, res) => {
 //        LOGOUT
 // ========================
 const Logout = (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+  });
   res.status(200).json({ message: "Logout successfully !!" });
 };
 
-module.exports = { Signup, signin, Logout };
+// ========================
+//     UPDATE PROFILE
+// ========================
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user._id; // From auth middleware
+    const { fullName, mobile, github, linkedin, collegeName, branch, companyName, designation, companyWebsite } = req.body;
+
+    let updateData = {
+      fullName,
+      mobile,
+      github,
+      linkedin,
+      collegeName,
+      branch,
+      companyName,
+      designation,
+      companyWebsite
+    };
+
+    // Remove undefined fields
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+    // Handle Profile Picture Upload
+    if (req.file) {
+      const uploaded = await uploadToCloudinary(req.file.buffer);
+      updateData.profilePicture = uploaded.secure_url;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select("-password");
+
+    res.status(200).json({
+      message: "Profile updated successfully!",
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error("Update Profile Error:", error);
+    res.status(500).json({ message: "Failed to update profile", error: error.message });
+  }
+};
+
+module.exports = { Signup, signin, Logout, updateProfile };

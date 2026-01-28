@@ -17,7 +17,6 @@ const upload = require("../middleware/multer");
 // 📌 Public Route
 router.get("/", getAllHackathons);
 
-
 // 📌 Protected Routes
 router.post(
   "/",
@@ -30,12 +29,15 @@ router.post(
     body("title").notEmpty().withMessage("Title is required"),
     body("hostName").notEmpty().withMessage("Host Name is required"),
     body("description").notEmpty().withMessage("Description is required"),
-    body("startDate").isISO8601().toDate().withMessage("Start Date is required"),
+    body("startDate")
+      .isISO8601()
+      .toDate()
+      .withMessage("Start Date is required"),
     body("endDate").isISO8601().toDate().withMessage("End Date is required"),
     body("location").notEmpty().withMessage("Location is required"),
-    validate
+    validate,
   ],
-  createHackathon
+  createHackathon,
 );
 
 router.put(
@@ -45,7 +47,7 @@ router.put(
     { name: "coverImage", maxCount: 1 },
     { name: "logoImage", maxCount: 1 },
   ]),
-  updateHackathon
+  updateHackathon,
 );
 // routes/hackathonRoutes.js
 router.get("/:id", async (req, res) => {
@@ -59,7 +61,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 router.delete("/:id", protect, deleteHackathon);
 

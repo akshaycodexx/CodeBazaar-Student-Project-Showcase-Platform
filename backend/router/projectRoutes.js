@@ -18,18 +18,55 @@ const uploadToCloudinary = (fileBuffer) => {
       (error, result) => {
         if (error) reject(error);
         else resolve(result.secure_url);
-      }
+      },
     );
     streamifier.createReadStream(fileBuffer).pipe(stream);
   });
 };
 
-// ✅ GET all projects
+// ✅ GET all projects with Search, Filter & Pagination
 router.get("/getallprojects", async (req, res) => {
   try {
-    const projects = await Project.find().populate("owner", "username profilePicture").sort({ _id: -1 });
-    res.json(projects);
+    const { search, tag, sort, page = 1, limit = 10 } = req.query;
+    const query = {};
+
+    // Search by title (case-insensitive)
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+
+    // Filter by tag
+    if (tag) {
+      query.tags = tag;
+    }
+
+    // Sort options
+    let sortOptions = { _id: -1 }; // Default: Newest first
+    if (sort === "oldest") sortOptions = { _id: 1 };
+    if (sort === "price_high") sortOptions = { price: -1 };
+    if (sort === "price_low") sortOptions = { price: 1 };
+    if (sort === "stars") sortOptions = { stars: -1 };
+
+    // Pagination
+    const skip = (page - 1) * limit;
+
+    const projects = await Project.find(query)
+      .populate("owner", "username profilePicture")
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(Number(limit))
+      .lean(); // Optimization: Return plain JS objects
+
+    const total = await Project.countDocuments(query);
+
+    res.json({
+      projects,
+      totalPages: Math.ceil(total / limit),
+      currentPage: Number(page),
+      totalProjects: total,
+    });
   } catch (error) {
+    console.error("Fetch projects error:", error);
     res.status(500).json({ error: "Failed to fetch projects" });
   }
 });
@@ -37,7 +74,9 @@ router.get("/getallprojects", async (req, res) => {
 // ✅ GET single project
 router.get("/:id", async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id);
+    const project = await Project.findById(req.params.id)
+      .populate("owner", "username profilePicture")
+      .lean();
     if (!project) return res.status(404).json({ error: "Project not found" });
     res.json(project);
   } catch (error) {
@@ -52,15 +91,21 @@ router.post(
   [
     body("title").notEmpty().withMessage("Title is required"),
     body("description").notEmpty().withMessage("Description is required"),
-    body("price").notEmpty().isNumeric().withMessage("Price is required and must be a number"),
-    validate
+    body("price")
+      .notEmpty()
+      .isNumeric()
+      .withMessage("Price is required and must be a number"),
+    validate,
   ],
   async (req, res) => {
     try {
-      const { title, description, price, owner, tags, learning, stars } = req.body;
+      const { title, description, price, owner, tags, learning, stars } =
+        req.body;
 
       if (!req.files || !req.files.coverImage || !req.files.logoImage) {
-        return res.status(400).json({ message: "Both cover and logo images are required" });
+        return res
+          .status(400)
+          .json({ message: "Both cover and logo images are required" });
       }
 
       // Validate owner (convert to ObjectId if your schema expects it)
@@ -70,7 +115,9 @@ router.post(
       }
 
       // Upload images
-      const coverImageUrl = await uploadToCloudinary(req.files.coverImage[0].buffer);
+      const coverImageUrl = await uploadToCloudinary(
+        req.files.coverImage[0].buffer,
+      );
       const logoUrl = await uploadToCloudinary(req.files.logoImage[0].buffer);
 
       const newProject = new Project({
@@ -93,8 +140,7 @@ router.post(
       console.error("Upload error details:", error);
       res.status(500).json({ message: error.message, stack: error.stack });
     }
-  }
+  },
 );
-
 
 module.exports = router;

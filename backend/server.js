@@ -10,6 +10,7 @@ const errorHandler = require("./middleware/errorHandler");
 const authRoutes = require("./router/authRoute");
 const hackathonRoutes = require("./router/hackathonRoutes");
 const ProjectRoutes = require("./router/projectRoutes");
+const paymentRoutes = require("./router/paymentRoutes");
 const connectDb = require("./db/db");
 
 // Auth middleware
@@ -33,22 +34,24 @@ app.use(express.json());
 // ✅ Allowed Origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://code-bazaar-student-project-showcas.vercel.app"
+  "https://code-bazaar-student-project-showcas.vercel.app",
 ];
 
 // ✅ Proper CORS handling for multiple domains
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked: ${origin}`));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked: ${origin}`));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 // ✅ Parse cookies
 app.use(cookieParser());
@@ -57,6 +60,7 @@ app.use(cookieParser());
 app.use("/api/photos", require("./router/photoRoute"));
 app.use("/api/hackathons", hackathonRoutes);
 app.use("/api/projects", ProjectRoutes);
+app.use("/api/payment", paymentRoutes);
 app.use("/api", authRoutes);
 
 // ✅ Auth check route

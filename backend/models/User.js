@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema(
     adminDept: String,
     adminCode: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);

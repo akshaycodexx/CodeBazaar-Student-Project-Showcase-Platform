@@ -7,7 +7,6 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "codebazar", // optional: any folder in Cloudinary
     allowed_formats: ["jpg", "png", "jpeg"],
-   
   },
 });
 
