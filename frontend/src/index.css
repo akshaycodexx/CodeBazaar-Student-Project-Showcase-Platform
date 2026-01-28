@@ -49,5 +49,5 @@ html {
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900;
+  @apply bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50 transition-colors duration-200;
 }

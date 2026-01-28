@@ -31,24 +31,19 @@ import ResumeBuilder from "./components/ResumeBuilder";
 import CommandPalette from "./components/CommandPalette";
 import JobBoard from "./components/JobBoard";
 import PostJob from "./components/PostJob";
+import InterviewDashboard from "./components/Interview/InterviewDashboard";
+import InterviewRoom from "./components/Interview/InterviewRoom";
 
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 
 
+import { ThemeProvider } from "./context/ThemeContext";
+
 function App() {
   const [user, setuser] = useState(null);
   const [tutorials, setTutorials] = useState([]);
-
-  const getuser = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/api/me`, { withCredentials: true });
-      setuser(res.data);
-    } catch (err) {
-      console.error("User fetch failed:", err.message);
-    }
-  };
 
   const fetchTutorials = async () => {
     try {
@@ -65,49 +60,53 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Toaster position="top-right" />
-      <Navbar user={user} setuser={setuser} />
-      <CommandPalette />
-      <Routes>
-        <Route path="/" element={<MainPage tutorials={tutorials} setTutorials={setTutorials} user={user} />} />
-        <Route path="/signin" element={<Signin setuser={setuser} />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/upload" element={<TutorialUploadForm />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <Toaster position="top-right" />
+        <Navbar user={user} setuser={setuser} />
+        <CommandPalette />
+        <Routes>
+          <Route path="/" element={<MainPage tutorials={tutorials} setTutorials={setTutorials} user={user} />} />
+          <Route path="/signin" element={<Signin setuser={setuser} />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/upload" element={<TutorialUploadForm />} />
 
-        <Route path="/edit-profile" element={<EditProfile user={user} setuser={setuser} />} />
-        <Route path="/dashboard" element={<Dashboard user={user} />} />
-        <Route path="/pricing" element={<Pricing user={user} />} />
-        <Route path="/mentorship" element={<Mentorship user={user} />} />
-        <Route path="/recruiters" element={<RecruitersPanel />} />
-        <Route path="/profile/:userId" element={<UserProfile />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/help" element={<HelpSupport />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/resume" element={<ResumeBuilder />} />
-        <Route path="/jobs" element={<JobBoard user={user} />} />
-        <Route path="/post-job" element={<PostJob />} />
-
-
-        <Route path="/hack" element={<Hackathon />} />
-        <Route path="/hackSignup" element={<HackathonCreateForm />} />
-        <Route path="/hackathons/:id" element={<HackathonDetail />} />
+          <Route path="/edit-profile" element={<EditProfile user={user} setuser={setuser} />} />
+          <Route path="/dashboard" element={<Dashboard user={user} />} />
+          <Route path="/pricing" element={<Pricing user={user} />} />
+          <Route path="/mentorship" element={<Mentorship user={user} />} />
+          <Route path="/recruiters" element={<RecruitersPanel />} />
+          <Route path="/profile/:userId" element={<UserProfile />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/help" element={<HelpSupport />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/resume" element={<ResumeBuilder />} />
+          <Route path="/jobs" element={<JobBoard user={user} />} />
+          <Route path="/post-job" element={<PostJob />} />
+          <Route path="/interviews" element={<InterviewDashboard user={user} />} />
+          <Route path="/interviews/:id/room" element={<InterviewRoom user={user} />} />
 
 
-
-        {/* //projects */}
-        <Route path="/projectUpload" element={<UploadProject user={user} />} />
-        <Route path="/getallprojects" element={<AllProject user={user} />} />
-
-        {/* //view project */}
-        {/* //If using React Router, in App.jsx */}
-        <Route path="/projects/:id" element={<ProjectDetails />} />
+          <Route path="/hack" element={<Hackathon />} />
+          <Route path="/hackSignup" element={<HackathonCreateForm />} />
+          <Route path="/hackathons/:id" element={<HackathonDetail />} />
 
 
-      </Routes>
-    </BrowserRouter>
+
+          {/* //projects */}
+          <Route path="/projectUpload" element={<UploadProject user={user} />} />
+          <Route path="/getallprojects" element={<AllProject user={user} />} />
+
+          {/* //view project */}
+          {/* //If using React Router, in App.jsx */}
+          <Route path="/projects/:id" element={<ProjectDetails />} />
+
+
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider >
   );
 }
 

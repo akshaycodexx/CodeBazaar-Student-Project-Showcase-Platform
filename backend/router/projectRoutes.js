@@ -132,7 +132,9 @@ router.post(
         learning: learning ? learning.split(",").map((l) => l.trim()) : [],
         stars: stars || 0,
         stars: stars || 0,
+        stars: stars || 0,
         liveDemoLink: req.body.liveDemoLink || "",
+        githubLink: req.body.githubLink || "",
         likes: [],
         comments: [], // Correct field name
         comments: [], // Correct field name
@@ -217,6 +219,58 @@ router.post("/:id/updates", auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Failed to add update" });
   }
+});
+
+// Fetch GitHub Repository Info
+router.post("/github-info", async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ message: "GitHub URL is required" });
+
+    // Extract owner/repo from URL
+    // Format: https://github.com/owner/repo
+    const parts = url.split("github.com/");
+    if (parts.length < 2) return res.status(400).json({ message: "Invalid GitHub URL" });
+
+    const repoPath = parts[1].split("/");
+    const owner = repoPath[0];
+    const repo = repoPath[1]?.replace(".git", ""); // Handle .git extension if present
+
+    if (!owner || !repo) return res.status(400).json({ message: "Invalid Repository Path" });
+
+    // Fetch from GitHub API
+    const githubRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+    if (!githubRes.ok) return res.status(githubRes.status).json({ message: "Repository not found or private" });
+
+    const data = await githubRes.json();
+
+    res.json({
+      title: data.name,
+      description: data.description || "",
+      tags: data.topics || [], // GitHub topics are arrays
+      // stars: data.stargazers_count, // We calculate random stars in frontend currently, maybe use real ones? Using real ones is better!
+      realStars: data.stargazers_count
+    });
+
+  } catch (err) {
+    console.error("GitHub Fetch Error:", err);
+    res.status(500).json({ message: "Failed to fetch GitHub info" });
+  }
+});
+
+// Analytics Tracking Endpoints
+router.post("/:id/view", async (req, res) => {
+  try {
+    await Project.findByIdAndUpdate(req.params.id, { $inc: { "analytics.views": 1 } });
+    res.sendStatus(200);
+  } catch (e) { res.sendStatus(500); }
+});
+
+router.post("/:id/click", async (req, res) => {
+  try {
+    await Project.findByIdAndUpdate(req.params.id, { $inc: { "analytics.clicks": 1 } });
+    res.sendStatus(200);
+  } catch (e) { res.sendStatus(500); }
 });
 
 module.exports = router;

@@ -39,6 +39,16 @@ const projectSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  githubLink: {
+    type: String,
+    default: ""
+  },
+  // Analytics
+  analytics: {
+    views: { type: Number, default: 0 },
+    clicks: { type: Number, default: 0 }, // Click on Live Demo
+    impressions: { type: Number, default: 0 }
+  },
   stars: {
     type: Number,
     default: 0

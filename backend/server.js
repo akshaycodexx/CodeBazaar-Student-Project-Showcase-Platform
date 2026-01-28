@@ -70,6 +70,7 @@ app.use("/api/bookings", require("./router/bookingRoutes")); // Bookings
 app.use("/api/notifications", require("./router/notificationRoutes")); // Notifications
 app.use("/api/leaderboard", require("./router/leaderboardRoutes")); // Leaderboard
 app.use("/api/jobs", require("./router/jobRoutes")); // Jobs
+app.use("/api/interviews", require("./router/interviewRoutes")); // Mock Interviews
 app.use("/api", authRoutes);
 
 // ✅ Auth check route

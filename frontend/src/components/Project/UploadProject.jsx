@@ -41,7 +41,9 @@ function UploadProject() {
       data.append("owner", userId);
       data.append("tags", form.tags);
       data.append("learning", form.learning);
+      data.append("learning", form.learning);
       data.append("liveDemoLink", form.liveDemoLink);
+      data.append("githubLink", form.githubLink);
       data.append("logoImage", logo);
       data.append("coverImage", cover);
       data.append("stars", Math.floor(Math.random() * 300));
@@ -132,6 +134,46 @@ function UploadProject() {
               placeholder="Authentication, API handling, State Management"
               value={form.learning}
               onChange={(e) => setForm({ ...form, learning: e.target.value })}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <label className={labelClass}>GitHub Repository Link</label>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!form.githubLink) return alert("Please enter a GitHub URL first");
+                  try {
+                    setIsLoading(true);
+                    const res = await axios.post(`${API_URL}/api/projects/github-info`, { url: form.githubLink });
+                    const { title, description, tags, realStars } = res.data;
+
+                    setForm(prev => ({
+                      ...prev,
+                      title: title || prev.title,
+                      description: description || prev.description,
+                      tags: tags.join(", ") || prev.tags,
+                      // We could also set stars if we update backend to accept them
+                    }));
+                    alert("Auto-filled from GitHub! 🐙");
+                  } catch (err) {
+                    alert("Failed to fetch GitHub info. Check the URL.");
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
+              >
+                ⚡ Auto-fill from GitHub
+              </button>
+            </div>
+            <input
+              type="url"
+              placeholder="https://github.com/username/repo"
+              value={form.githubLink || ""}
+              onChange={(e) => setForm({ ...form, githubLink: e.target.value })}
               className={inputClass}
             />
           </div>

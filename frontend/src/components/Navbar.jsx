@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Menu, User, Bell } from 'lucide-react'; // Assuming lucide-react is available or use react-icons if preferred
+import { Menu, User, Bell, Moon, Sun } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function Navbar({ user, setuser }) {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -70,6 +72,7 @@ function Navbar({ user, setuser }) {
     { name: 'Mentorship', path: '/mentorship' },
     { name: 'Mentorship', path: '/mentorship' },
     { name: 'Jobs', path: '/jobs' },
+    { name: 'Mock Interview', path: '/interviews' },
     { name: 'Recruiters Panel', path: '/recruiters' },
     { name: 'Leaderboard', path: '/leaderboard' },
     { name: 'Cart', path: '/cart' },
@@ -93,6 +96,11 @@ function Navbar({ user, setuser }) {
             </button>
           ) : (
             <div className="flex items-center gap-4">
+              {/* Theme Toggle */}
+              <button onClick={toggleTheme} className="p-2 text-neutral-600 hover:text-primary transition-colors focus:outline-none">
+                {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              </button>
+
               {/* Notification Bell */}
               <div className="relative">
                 <button

@@ -8,6 +8,7 @@ import PriceOptions from "./PriceOptions";
 import DescriptionSection from "./DescriptionSection";
 import LearningSection from "./LearningSection";
 import ReviewsSection from "./ReviewsSection";
+import ProjectAnalytics from "../ProjectAnalytics";
 import "./ProjectDetails.css";
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -40,6 +41,16 @@ const ProjectDetails = () => {
     };
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    // View Tracking
+    const trackView = async () => {
+      try {
+        await axios.post(`${API_URL}/api/projects/${id}/view`);
+      } catch (e) { console.error("View track failed"); }
+    };
+    trackView();
+  }, [id]);
 
   useEffect(() => {
     axios
@@ -104,7 +115,13 @@ const ProjectDetails = () => {
           <h1 className="text-3xl font-bold text-neutral-900">{project.title}</h1>
           <div className="flex gap-2">
             {project.liveDemoLink && (
-              <a href={project.liveDemoLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold transition-colors">
+              <a
+                href={project.liveDemoLink}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => axios.post(`${API_URL}/api/projects/${project._id}/click`)}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold transition-colors"
+              >
                 <ExternalLink className="w-4 h-4" /> Live Demo
               </a>
             )}
@@ -115,6 +132,13 @@ const ProjectDetails = () => {
         </div>
 
         <ProjectCard project={project} />
+
+        {/* Analytics Section (Only for Owner) */}
+        {currentUser && project.owner === currentUser._id && (
+          <div className="mt-8">
+            <ProjectAnalytics project={project} />
+          </div>
+        )}
 
         {/* Interaction Bar */}
         <div className="flex items-center gap-6 mt-6 border-t border-neutral-100 pt-4">
