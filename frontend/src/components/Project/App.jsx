@@ -50,7 +50,12 @@ function App({ user }) {
     <div className="min-h-screen bg-neutral-50 font-sans">
       <UploadSection />
       <FilterBar filters={filters} setFilters={setFilters} />
-      <ProjectList projects={projects} loading={loading} user={user} />
+      <ProjectList
+        projects={projects}
+        loading={loading}
+        user={user}
+        clearFilters={() => setFilters({ search: '', tag: '', sort: '' })}
+      />
       <Footer />
     </div>
   );

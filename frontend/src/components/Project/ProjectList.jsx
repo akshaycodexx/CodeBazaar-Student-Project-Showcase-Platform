@@ -1,7 +1,8 @@
 import React from 'react';
 import ProjectCard from './ProjectCard';
+import { RefreshCcw } from 'lucide-react';
 
-const ProjectList = ({ projects, loading, user }) => {
+const ProjectList = ({ projects, loading, user, clearFilters }) => {
   return (
     <div className="min-h-[50vh] bg-neutral-50 py-12 px-4">
       <div className="max-w-screen-xl mx-auto">
@@ -19,10 +20,10 @@ const ProjectList = ({ projects, loading, user }) => {
           <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-neutral-200">
             <p className="text-xl text-neutral-500">No projects found matching your criteria.</p>
             <button
-              onClick={() => window.location.reload()}
-              className="mt-4 text-primary font-medium hover:underline"
+              onClick={clearFilters}
+              className="mt-4 flex items-center justify-center gap-2 text-primary font-medium hover:underline mx-auto"
             >
-              Clear Filters
+              <RefreshCcw className="w-4 h-4" /> Clear Filters
             </button>
           </div>
         ) : (

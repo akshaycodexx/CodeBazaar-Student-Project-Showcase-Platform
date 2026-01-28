@@ -9,7 +9,7 @@ function BuyNowButton({ project }) {
     try {
       // 🔥 1. Send selected price to backend
       const { data } = await axios.post(
-       `${API_URL}/api/payment/create-order`,
+        `${API_URL}/api/payment/create-order`,
         { amount: project.price },
         { withCredentials: true }
       );
@@ -23,11 +23,8 @@ function BuyNowButton({ project }) {
         description: `Purchase: ${project.title}`,
         order_id: data.id,
         handler: function (response) {
-          alert("Payment Successful!");
-
-          // 🔥 3. Trigger ZIP download
-          const fileName = `${project._id}.zip`;
-          window.location.href = `/downloads/${fileName}`;
+          alert("Payment Successful! Access granted.");
+          // TODO: Implement actual download or access grant logic here
         },
         theme: { color: "#0F172A" },
       };
