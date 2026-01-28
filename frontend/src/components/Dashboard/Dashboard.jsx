@@ -1,9 +1,25 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { TrendingUp, Users, DollarSign, Activity } from 'lucide-react';
+import RecruiterDashboard from './RecruiterDashboard';
+import MentorDashboard from './MentorDashboard';
 
 const Dashboard = ({ user }) => {
-    // Mock Data for Analytics
+    // Role-based routing
+    if (!user) return <div className="text-center p-10">Please log in to view dashboard.</div>;
+
+    // Check for both spellings due to legacy handling
+    const isRecruiter = user.role === 'recruiter' || user.role === 'recuritor';
+
+    if (isRecruiter) {
+        return <RecruiterDashboard user={user} />;
+    }
+
+    if (user.role === 'mentor') {
+        return <MentorDashboard user={user} />;
+    }
+
+    // Default: Student Dashboard
     const revenueData = [
         { name: 'Jan', revenue: 4000 },
         { name: 'Feb', revenue: 3000 },
@@ -23,8 +39,6 @@ const Dashboard = ({ user }) => {
         { name: 'Sat', views: 239 },
         { name: 'Sun', views: 349 },
     ];
-
-    if (!user) return <div className="text-center p-10">Please log in to view dashboard.</div>;
 
     return (
         <div className="min-h-screen bg-neutral-50 py-12 px-4">

@@ -1,13 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Menu, X, User } from 'lucide-react'; // Assuming lucide-react is available or use react-icons if preferred
+import { Menu, User, Bell } from 'lucide-react'; // Assuming lucide-react is available or use react-icons if preferred
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function Navbar({ user, setuser }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchNotifications();
+      // Poll every 30 seconds
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/notifications`, { withCredentials: true });
+      setNotifications(res.data);
+      setUnreadCount(res.data.filter(n => !n.read).length);
+    } catch (err) {
+      console.error("Failed to fetch notifications");
+    }
+  };
+
+  const markRead = async () => {
+    if (unreadCount > 0) {
+      try {
+        await axios.put(`${API_URL}/api/notifications/read`, {}, { withCredentials: true });
+        setUnreadCount(0);
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      } catch (err) {
+        console.error("Failed to mark read");
+      }
+    }
+  };
 
   const handleLoginClick = () => {
     navigate('/signin');
@@ -34,7 +68,11 @@ function Navbar({ user, setuser }) {
     { name: 'Hackathons', path: '/hack' },
     { name: 'Pricing', path: '/pricing' },
     { name: 'Mentorship', path: '/mentorship' },
+    { name: 'Mentorship', path: '/mentorship' },
+    { name: 'Jobs', path: '/jobs' },
     { name: 'Recruiters Panel', path: '/recruiters' },
+    { name: 'Leaderboard', path: '/leaderboard' },
+    { name: 'Cart', path: '/cart' },
   ];
 
   return (
@@ -44,7 +82,7 @@ function Navbar({ user, setuser }) {
           <span className="self-center text-2xl font-bold whitespace-nowrap text-primary-dark font-heading">CodeBazaar</span>
         </a>
 
-        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse items-center gap-4">
           {!user ? (
             <button
               onClick={handleLoginClick}
@@ -54,19 +92,62 @@ function Navbar({ user, setuser }) {
               Log in / Signup
             </button>
           ) : (
-            <div className="flex items-center gap-3">
-              <img
-                src={user.profilePicture || "/default-avatar.png"}
-                alt="Profile"
-                className="w-10 h-10 rounded-full object-cover border-2 border-primary"
-              />
-              <span className="hidden md:block text-sm font-medium text-neutral-800">{user.fullName}</span>
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-600 hover:text-red-800 font-medium"
-              >
-                Logout
-              </button>
+            <div className="flex items-center gap-4">
+              {/* Notification Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => { setIsNotifOpen(!isNotifOpen); markRead(); }}
+                  className="relative p-2 text-neutral-600 hover:text-primary transition-colors focus:outline-none"
+                >
+                  <Bell className="w-6 h-6" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+                  )}
+                </button>
+
+                {/* Notification Dropdown */}
+                {isNotifOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-neutral-100 py-2 z-50 animate-fade-in-down h-80 overflow-y-auto">
+                    <div className="px-4 py-2 border-b border-neutral-100 font-bold text-neutral-800">Notifications</div>
+                    {notifications.length === 0 ? (
+                      <p className="px-4 py-4 text-center text-sm text-neutral-500">No new notifications</p>
+                    ) : (
+                      notifications.map(notif => (
+                        <div key={notif._id} className={`px-4 py-3 border-b border-neutral-50 hover:bg-neutral-50 transition-colors ${!notif.read ? 'bg-indigo-50/50' : ''}`}>
+                          <p className="text-sm text-neutral-800 font-medium">{notif.message}</p>
+                          <p className="text-xs text-neutral-400 mt-1">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Profile Dropdown */}
+              <div className="relative group">
+                <button className="flex items-center gap-3 focus:outline-none">
+                  <img
+                    src={user.profilePicture || "/default-avatar.png"}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-primary group-hover:border-primary-dark transition-colors"
+                  />
+                  <span className="hidden md:block text-sm font-medium text-neutral-800">{user.fullName}</span>
+                </button>
+
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-neutral-100 py-2 hidden group-hover:block hover:block z-50 animate-fade-in-down">
+                  <div className="px-4 py-3 border-b border-neutral-100">
+                    <p className="text-sm text-neutral-900 font-bold truncate">{user.fullName}</p>
+                    <p className="text-xs text-neutral-500 truncate">{user.email}</p>
+                  </div>
+                  <a onClick={() => navigate('/dashboard')} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 cursor-pointer">Dashboard</a>
+                  <a onClick={() => navigate(`/profile/${user._id}`)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 cursor-pointer">My Profile</a>
+                  <a onClick={() => navigate('/help')} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 cursor-pointer">Help & Support</a>
+                  <div className="border-t border-neutral-100 mt-1">
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Logout</button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
           <button

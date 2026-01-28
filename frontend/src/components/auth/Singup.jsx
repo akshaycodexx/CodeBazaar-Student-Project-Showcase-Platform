@@ -24,6 +24,10 @@ function Signup() {
     recruiterLinkedin: "",
     adminDept: "",
     adminCode: "",
+    // Mentor
+    pricePerSession: "",
+    skills: "",
+    role: "student", // field to store role if backend expects it in body not just separate state
   });
 
   const [profilePicture, setProfilePicture] = useState(null);
@@ -116,7 +120,8 @@ function Signup() {
               className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none bg-white"
             >
               <option value="student">Student</option>
-              <option value="recuritor">Recruiter</option>
+              <option value="recruiter">Recruiter</option>
+              <option value="mentor">Mentor</option>
               <option value="admin">Admin</option>
             </select>
           </div>
@@ -130,12 +135,22 @@ function Signup() {
             </div>
           )}
 
-          {role === "recuritor" && (
+          {role === "recruiter" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
               <input type="text" name="companyName" placeholder="Company Name" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
               <input type="text" name="designation" placeholder="Designation" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
               <input type="url" name="companyWebsite" placeholder="Company Website" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
               <input type="url" name="recruiterLinkedin" placeholder="LinkedIn Profile URL" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+            </div>
+          )}
+
+          {role === "mentor" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+              <input type="text" name="companyName" placeholder="Current Company / Organization" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="text" name="designation" placeholder="Role (e.g. Senior SDE)" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="number" name="pricePerSession" placeholder="Price Per Session (₹)" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="text" name="skills" placeholder="Skills (comma separated)" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="url" name="linkedin" placeholder="LinkedIn Profile URL" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
             </div>
           )}
 

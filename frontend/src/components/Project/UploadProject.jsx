@@ -8,7 +8,8 @@ function UploadProject() {
     description: "",
     price: "",
     tags: "",
-    learning: ""
+    learning: "", // Added learning outcomes
+    liveDemoLink: "", // Added Live Demo Link
   });
 
   const [userId, setUserId] = useState("");
@@ -40,6 +41,7 @@ function UploadProject() {
       data.append("owner", userId);
       data.append("tags", form.tags);
       data.append("learning", form.learning);
+      data.append("liveDemoLink", form.liveDemoLink);
       data.append("logoImage", logo);
       data.append("coverImage", cover);
       data.append("stars", Math.floor(Math.random() * 300));
@@ -130,6 +132,17 @@ function UploadProject() {
               placeholder="Authentication, API handling, State Management"
               value={form.learning}
               onChange={(e) => setForm({ ...form, learning: e.target.value })}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Live Demo Link (Optional)</label>
+            <input
+              type="url"
+              placeholder="https://your-project-demo.com"
+              value={form.liveDemoLink}
+              onChange={(e) => setForm({ ...form, liveDemoLink: e.target.value })}
               className={inputClass}
             />
           </div>

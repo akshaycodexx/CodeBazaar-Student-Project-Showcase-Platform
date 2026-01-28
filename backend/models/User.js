@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["student", "recuritor", "admin"], // ✅ match values from frontend
+      enum: ["student", "recruiter", "recuritor", "admin", "mentor"], // Support both spellings and new mentor role
       required: true,
     },
     profilePicture: {
@@ -48,6 +48,21 @@ const userSchema = new mongoose.Schema(
     // Admin fields
     adminDept: String,
     adminCode: String,
+
+    // Mentor fields
+    pricePerSession: Number,
+    skills: [String], // or String if comma separated
+
+
+    // Shopping Cart
+    cart: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project"
+    }],
+
+    // Gamification
+    points: { type: Number, default: 0 },
+    badges: [{ type: String }], // 'Verified', 'Top Contributor', 'Hackathon Winner'
   },
   { timestamps: true },
 );

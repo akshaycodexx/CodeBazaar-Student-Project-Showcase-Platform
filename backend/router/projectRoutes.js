@@ -9,6 +9,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const { body } = require("express-validator");
 const validate = require("../middleware/validate");
+const { protect } = require("../middleware/authMiddleware");
 
 // Helper function to upload to Cloudinary from buffer
 const uploadToCloudinary = (fileBuffer) => {
@@ -130,7 +131,10 @@ router.post(
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
         learning: learning ? learning.split(",").map((l) => l.trim()) : [],
         stars: stars || 0,
+        stars: stars || 0,
+        liveDemoLink: req.body.liveDemoLink || "",
         likes: [],
+        comments: [], // Correct field name
         comments: [], // Correct field name
       });
 
@@ -142,5 +146,77 @@ router.post(
     }
   },
 );
+
+// POST - Like a project
+router.post("/:id/like", protect, async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    // Check if valid user
+    if (!req.user || !req.user._id) return res.status(401).json({ message: "Unauthorized" });
+
+    // Check if already liked
+    const index = project.likes.indexOf(req.user._id);
+    if (index === -1) {
+      // Like
+      project.likes.push(req.user._id);
+    } else {
+      // Unlike
+      project.likes.splice(index, 1);
+    }
+
+    await project.save();
+    res.json(project.likes);
+  } catch (error) {
+    console.error("Like error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST - Add a comment
+router.post("/:id/comment", protect, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ message: "Comment text is required" });
+
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    const newComment = {
+      user: req.user._id,
+      text,
+      createdAt: new Date()
+    };
+
+    project.comments.unshift(newComment);
+    await project.save();
+
+    // Populate the user in the new comment to return it
+    const updatedProject = await Project.findById(req.params.id).populate("comments.user", "username profilePicture");
+
+    res.json(updatedProject.comments);
+  } catch (error) {
+    console.error("Comment error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add Devlog Update
+router.post("/:id/updates", auth, async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const project = await Project.findById(req.params.id);
+
+    if (!project) return res.status(404).json({ message: "Project not found" });
+    if (project.owner.toString() !== req.user.id) return res.status(403).json({ message: "Unauthorized" });
+
+    project.updates.push({ title, description });
+    await project.save();
+    res.json(project.updates);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add update" });
+  }
+});
 
 module.exports = router;

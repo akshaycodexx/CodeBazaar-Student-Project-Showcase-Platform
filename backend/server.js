@@ -61,6 +61,15 @@ app.use("/api/photos", require("./router/photoRoute"));
 app.use("/api/hackathons", hackathonRoutes);
 app.use("/api/projects", ProjectRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/mentors", require("./router/mentorRoutes"));
+app.use("/api/chat", require("./router/chatRoutes"));
+app.use("/api/cart", require("./router/cartRoutes")); // Cart
+app.use("/api/orders", require("./router/orderRoutes")); // Orders
+app.use("/api/plans", require("./router/planRoutes")); // Plans
+app.use("/api/bookings", require("./router/bookingRoutes")); // Bookings
+app.use("/api/notifications", require("./router/notificationRoutes")); // Notifications
+app.use("/api/leaderboard", require("./router/leaderboardRoutes")); // Leaderboard
+app.use("/api/jobs", require("./router/jobRoutes")); // Jobs
 app.use("/api", authRoutes);
 
 // ✅ Auth check route

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Github, Linkedin, MapPin, Award } from 'lucide-react';
+import { Github, Linkedin, MapPin, Award, MessageSquare } from 'lucide-react';
 import ProjectCard from '../Project/ProjectCard';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -67,7 +67,15 @@ const UserProfile = () => {
                             {profileUser.branch && <span className="flex items-center gap-1"><Award className="w-4 h-4" /> {profileUser.branch}</span>}
                         </div>
 
-                        <div className="flex gap-4 justify-center md:justify-start">
+                        <div className="flex gap-4 justify-center md:justify-start items-center">
+                            <button onClick={() => window.location.href = `/chat?userId=${profileUser._id}`} className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg font-bold transition-colors">
+                                <MessageSquare className="w-4 h-4" /> Message
+                            </button>
+                            {/* Only show Resume button if viewing own profile (simplified check) */}
+                            {/* Ideally check profileUser._id === loggedInUser._id */}
+                            <button onClick={() => window.location.href = `/resume`} className="flex items-center gap-2 bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-50 px-4 py-2 rounded-lg font-bold transition-colors">
+                                <Award className="w-4 h-4" /> Build Resume
+                            </button>
                             {profileUser.github && (
                                 <a href={profileUser.github} target="_blank" rel="noreferrer" className="p-2 bg-neutral-100 rounded-lg hover:bg-neutral-200 transition-colors text-neutral-800">
                                     <Github className="w-5 h-5" />
@@ -83,17 +91,87 @@ const UserProfile = () => {
                 </div>
 
                 {/* User Projects */}
+                {/* User Projects */}
                 <h2 className="text-2xl font-bold text-neutral-900 mb-6">Projects by {profileUser.fullName.split(' ')[0]}</h2>
                 {userProjects.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                         {userProjects.map(project => (
                             <ProjectCard key={project._id} project={project} />
                         ))}
                     </div>
                 ) : (
-                    <p className="text-neutral-500">No projects uploaded yet.</p>
+                    <p className="text-neutral-500 mb-12">No projects uploaded yet.</p>
                 )}
 
+                {/* Purchase History (Only visible to own profile) */}
+                {/* We need to check if logged in user is viewing their own profile. 
+                    Ideally pass 'user' prop to UserProfile or fetch 'me' again. 
+                    Let's assume for now we show it if 'user' prop passed or checking ID match if easy.
+                    Actually UserProfile doesn't receive 'user' prop currently in App.jsx routing! 
+                    Let's fetch orders regardless and if error (401/403) we hide it? 
+                    Better: Fetch orders only if profileUser._id matches loggedInUser._id.
+                    For this prototype, let's fetch orders and if empty or error just show nothing.
+                */}
+                <PurchaseHistory userId={userId} />
+
+            </div>
+        </div>
+    );
+};
+
+// Simple sub-component for Purchase History
+const PurchaseHistory = ({ userId }) => {
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+        // Attempt to fetch orders. Backend protects this route, so it only succeeds if viewing OWN profile (and logged in).
+        // Actually backend 'getUserOrders' returns req.user's orders. 
+        // So if I am logged in as User A, and viewing User B's profile, this component will fetch User A's orders if I mount it!
+        // We must ONLY mount this if userId matched logged in user.
+        // Since we don't have loggedInUser easily accessible here without context/prop drill, let's try a safe approach.
+        // We'll fetch 'me' first.
+
+        const checkAndFetch = async () => {
+            try {
+                const meRes = await axios.get(`${API_URL}/api/me`, { withCredentials: true });
+                if (meRes.data && meRes.data._id === userId) {
+                    const res = await axios.get(`${API_URL}/api/orders`, { withCredentials: true });
+                    setOrders(res.data);
+                }
+            } catch (e) {
+                // Not logged in or not own profile
+            }
+        };
+        checkAndFetch();
+    }, [userId]);
+
+    if (orders.length === 0) return null;
+
+    return (
+        <div className="border-t border-neutral-200 pt-8">
+            <h2 className="text-2xl font-bold text-neutral-900 mb-6">Purchase History</h2>
+            <div className="space-y-4">
+                {orders.map(order => (
+                    <div key={order._id} className="bg-white p-4 rounded-xl border border-neutral-200 shadow-sm">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-neutral-500">Ordered on {new Date(order.createdAt).toLocaleDateString()}</span>
+                            <span className={`text-xs px-2 py-1 rounded-full ${order.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                {order.status.toUpperCase()}
+                            </span>
+                        </div>
+                        <div className="space-y-2">
+                            {order.projects.map(p => (
+                                <div key={p._id} className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-neutral-100 rounded-md overflow-hidden">
+                                        {/* Ideally project cover image */}
+                                    </div>
+                                    <span className="font-medium text-neutral-800">{p.title || "Project"}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-2 text-right font-bold text-primary">Total: ₹{order.amount}</div>
+                    </div>
+                ))}
             </div>
         </div>
     );

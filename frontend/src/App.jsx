@@ -22,6 +22,15 @@ import Pricing from "./components/Pricing";
 import Mentorship from "./components/Mentorship/Mentorship";
 import RecruitersPanel from "./components/Recruiter/RecruitersPanel";
 import UserProfile from "./components/Profile/UserProfile";
+import AdminDashboard from "./components/Admin/AdminDashboard";
+import Chat from "./components/Chat/Chat";
+import Cart from "./components/Cart/Cart";
+import HelpSupport from "./components/HelpSupport";
+import Leaderboard from "./components/Leaderboard";
+import ResumeBuilder from "./components/ResumeBuilder";
+import CommandPalette from "./components/CommandPalette";
+import JobBoard from "./components/JobBoard";
+import PostJob from "./components/PostJob";
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -59,6 +68,7 @@ function App() {
     <BrowserRouter>
       <Toaster position="top-right" />
       <Navbar user={user} setuser={setuser} />
+      <CommandPalette />
       <Routes>
         <Route path="/" element={<MainPage tutorials={tutorials} setTutorials={setTutorials} user={user} />} />
         <Route path="/signin" element={<Signin setuser={setuser} />} />
@@ -68,9 +78,17 @@ function App() {
         <Route path="/edit-profile" element={<EditProfile user={user} setuser={setuser} />} />
         <Route path="/dashboard" element={<Dashboard user={user} />} />
         <Route path="/pricing" element={<Pricing user={user} />} />
-        <Route path="/mentorship" element={<Mentorship />} />
+        <Route path="/mentorship" element={<Mentorship user={user} />} />
         <Route path="/recruiters" element={<RecruitersPanel />} />
         <Route path="/profile/:userId" element={<UserProfile />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/help" element={<HelpSupport />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/resume" element={<ResumeBuilder />} />
+        <Route path="/jobs" element={<JobBoard user={user} />} />
+        <Route path="/post-job" element={<PostJob />} />
 
 
         <Route path="/hack" element={<Hackathon />} />
