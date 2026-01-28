@@ -41,7 +41,7 @@ function UploadProject() {
       data.append("owner", userId);
       data.append("tags", form.tags);
       data.append("learning", form.learning);
-      data.append("learning", form.learning);
+
       data.append("liveDemoLink", form.liveDemoLink);
       data.append("githubLink", form.githubLink);
       data.append("logoImage", logo);

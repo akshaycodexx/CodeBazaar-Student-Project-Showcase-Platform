@@ -1,196 +1,162 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Upload } from 'lucide-react';
+import { Trash2, Users, Folder, DollarSign, Activity } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminDashboard = () => {
-    const [mentors, setMentors] = useState([]);
+    const [stats, setStats] = useState({});
+    const [users, setUsers] = useState([]);
+    const [projects, setProjects] = useState([]);
+    const [activeTab, setActiveTab] = useState('overview');
     const [loading, setLoading] = useState(true);
-    const [formData, setFormData] = useState({
-        name: '',
-        role: '',
-        company: '',
-        linkedin: '',
-        pricePerSession: '',
-        skills: ''
-    });
-    const [image, setImage] = useState(null);
 
     useEffect(() => {
-        fetchMentors();
+        fetchData();
     }, []);
 
-    const fetchMentors = async () => {
+    const fetchData = async () => {
         try {
-            const res = await axios.get(`${API_URL}/api/mentors`);
-            setMentors(res.data);
+            const [statsRes, usersRes, projectsRes] = await Promise.all([
+                axios.get(`${API_URL}/api/admin/stats`, { withCredentials: true }),
+                axios.get(`${API_URL}/api/admin/users`, { withCredentials: true }),
+                axios.get(`${API_URL}/api/admin/projects`, { withCredentials: true })
+            ]);
+            setStats(statsRes.data);
+            setUsers(usersRes.data);
+            setProjects(projectsRes.data);
+        } catch (err) {
+            console.error(err);
+            // toast.error("Failed to load admin data"); // Suppress if 403 (not admin)
+        } finally {
             setLoading(false);
-        } catch (err) {
-            toast.error("Failed to fetch mentors");
-            setLoading(false);
         }
     };
 
-    const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!image) return toast.error("Please upload an image");
-
-        const data = new FormData();
-        Object.keys(formData).forEach(key => data.append(key, formData[key]));
-        data.append('image', image);
-
+    const deleteUser = async (id) => {
+        if (!window.confirm("Ban this user?")) return;
         try {
-            toast.loading("Adding Mentor...");
-            await axios.post(`${API_URL}/api/mentors`, data, { withCredentials: true });
-            toast.dismiss();
-            toast.success("Mentor Added!");
-            setFormData({ name: '', role: '', company: '', linkedin: '', pricePerSession: '', skills: '' });
-            setImage(null);
-            fetchMentors();
-        } catch (err) {
-            toast.dismiss();
-            toast.error("Failed to add mentor");
-        }
+            await axios.delete(`${API_URL}/api/admin/users/${id}`, { withCredentials: true });
+            toast.success("User Banned");
+            fetchData();
+        } catch (e) { toast.error("Failed"); }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure?")) return;
+    const deleteProject = async (id) => {
+        if (!window.confirm("Delete this project?")) return;
         try {
-            await axios.delete(`${API_URL}/api/mentors/${id}`, { withCredentials: true });
-            toast.success("Mentor Deleted");
-            fetchMentors();
-        } catch (err) {
-            toast.error("Failed to delete mentor");
-        }
+            await axios.delete(`${API_URL}/api/admin/projects/${id}`, { withCredentials: true });
+            toast.success("Project Deleted");
+            fetchData();
+        } catch (e) { toast.error("Failed"); }
     };
 
-    const handlePlanSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post(`${API_URL}/api/plans`, planForm, { withCredentials: true });
-            toast.success("Plan Added!");
-            setPlanForm({ name: '', price: '', duration: 'month', features: '', buttonText: 'Subscribe Now', recommended: false });
-            fetchPlans();
-        } catch (err) {
-            toast.error("Failed to add plan");
-        }
-    };
-
-    const deletePlan = async (id) => {
-        if (!window.confirm("Delete plan?")) return;
-        try {
-            await axios.delete(`${API_URL}/api/plans/${id}`, { withCredentials: true });
-            toast.success("Plan Deleted");
-            fetchPlans();
-        } catch (err) {
-            toast.error("Failed to delete plan");
-        }
-    };
+    if (loading) return <div className="p-10 text-center">Loading Admin Panel...</div>;
 
     return (
         <div className="min-h-screen bg-neutral-50 py-12 px-4">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-neutral-900 mb-8">Admin Dashboard</h1>
+            <div className="max-w-6xl mx-auto">
+                <h1 className="text-3xl font-bold text-neutral-900 mb-8">Admin Super-Dashboard 🛡️</h1>
 
-                <div className="flex gap-4 mb-8">
-                    <button onClick={() => setActiveTab('mentors')} className={`px-4 py-2 rounded-lg font-bold ${activeTab === 'mentors' ? 'bg-primary text-white' : 'bg-white text-neutral-600'}`}>Manage Mentors</button>
-                    <button onClick={() => setActiveTab('plans')} className={`px-4 py-2 rounded-lg font-bold ${activeTab === 'plans' ? 'bg-primary text-white' : 'bg-white text-neutral-600'}`}>Manage Plans</button>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-blue-50 text-blue-600 rounded-full"><Users /></div>
+                            <div><p className="text-sm text-neutral-500">Total Users</p><p className="text-2xl font-bold">{stats.totalUsers}</p></div>
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-purple-50 text-purple-600 rounded-full"><Folder /></div>
+                            <div><p className="text-sm text-neutral-500">Total Projects</p><p className="text-2xl font-bold">{stats.totalProjects}</p></div>
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-green-50 text-green-600 rounded-full"><DollarSign /></div>
+                            <div><p className="text-sm text-neutral-500">Revenue</p><p className="text-2xl font-bold">₹{stats.totalRevenue?.toLocaleString()}</p></div>
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-orange-50 text-orange-600 rounded-full"><Activity /></div>
+                            <div><p className="text-sm text-neutral-500">Interviews</p><p className="text-2xl font-bold">{stats.totalInterviews}</p></div>
+                        </div>
+                    </div>
                 </div>
 
-                {activeTab === 'mentors' ? (
-                    <>
-                        {/* Add Mentor Form */}
-                        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 mb-8">
-                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Plus className="w-5 h-5" /> Add New Mentor</h2>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input name="name" placeholder="Name" value={formData.name} onChange={handleInputChange} required className="input-field border p-2 rounded" />
-                                    <input name="role" placeholder="Role (e.g. SDE)" value={formData.role} onChange={handleInputChange} required className="input-field border p-2 rounded" />
-                                    <input name="company" placeholder="Company" value={formData.company} onChange={handleInputChange} className="input-field border p-2 rounded" />
-                                    <input name="pricePerSession" type="number" placeholder="Price/Session" value={formData.pricePerSession} onChange={handleInputChange} className="input-field border p-2 rounded" />
-                                    <input name="linkedin" placeholder="LinkedIn URL" value={formData.linkedin} onChange={handleInputChange} className="input-field border p-2 rounded" />
-                                    <input name="skills" placeholder="Skills (comma separated)" value={formData.skills} onChange={handleInputChange} className="input-field border p-2 rounded" />
-                                </div>
+                {/* Tabs */}
+                <div className="flex gap-4 mb-8">
+                    <button onClick={() => setActiveTab('overview')} className={`px-4 py-2 rounded-lg font-bold ${activeTab === 'overview' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-600'}`}>Overview</button>
+                    <button onClick={() => setActiveTab('users')} className={`px-4 py-2 rounded-lg font-bold ${activeTab === 'users' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-600'}`}>Manage Users</button>
+                    <button onClick={() => setActiveTab('projects')} className={`px-4 py-2 rounded-lg font-bold ${activeTab === 'projects' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-600'}`}>Manage Projects</button>
+                </div>
 
-                                <div className="border-2 border-dashed border-neutral-300 rounded-lg p-4 text-center cursor-pointer hover:bg-neutral-50 transition-colors">
-                                    <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} className="hidden" id="mentor-img" />
-                                    <label htmlFor="mentor-img" className="cursor-pointer flex flex-col items-center">
-                                        <Upload className="w-6 h-6 text-neutral-400 mb-2" />
-                                        <span className="text-sm text-neutral-500">{image ? image.name : "Upload Profile Image"}</span>
-                                    </label>
-                                </div>
-
-                                <button type="submit" className="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-primary-dark transition-colors">Add Mentor</button>
-                            </form>
-                        </div>
-
-                        {/* Mentor List */}
-                        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-                            <h2 className="text-xl font-bold mb-6">Manage Mentors</h2>
-                            {loading ? <p>Loading...</p> : (
-                                <div className="space-y-4">
-                                    {mentors.map(mentor => (
-                                        <div key={mentor._id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
-                                            <div className="flex items-center gap-4">
-                                                <img src={mentor.image} alt={mentor.name} className="w-12 h-12 rounded-full object-cover" />
-                                                <div>
-                                                    <h3 className="font-bold">{mentor.name}</h3>
-                                                    <p className="text-sm text-neutral-500">{mentor.role} @ {mentor.company}</p>
-                                                </div>
+                {/* User Content */}
+                {activeTab === 'users' && (
+                    <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+                        <table className="w-full text-left">
+                            <thead className="bg-neutral-50 border-b border-neutral-200">
+                                <tr>
+                                    <th className="p-4 font-semibold text-neutral-600">User</th>
+                                    <th className="p-4 font-semibold text-neutral-600">Role</th>
+                                    <th className="p-4 font-semibold text-neutral-600">Created</th>
+                                    <th className="p-4 font-semibold text-neutral-600">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {users.map(u => (
+                                    <tr key={u._id} className="border-b border-neutral-100 hover:bg-neutral-50">
+                                        <td className="p-4 flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center font-bold text-xs">{u.fullName[0]}</div>
+                                            <div>
+                                                <div className="font-bold text-neutral-900">{u.fullName}</div>
+                                                <div className="text-xs text-neutral-500">{u.email}</div>
                                             </div>
-                                            <button onClick={() => handleDelete(mentor._id)} className="text-red-500 hover:text-red-700 p-2"><Trash2 className="w-5 h-5" /></button>
-                                        </div>
-                                    ))}
-                                    {mentors.length === 0 && <p className="text-center text-neutral-400">No mentors found.</p>}
-                                </div>
-                            )}
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        {/* Add Plan Form */}
-                        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 mb-8">
-                            <h2 className="text-xl font-bold mb-6">Add New Plan</h2>
-                            <form onSubmit={handlePlanSubmit} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input placeholder="Plan Name (e.g. Premium)" value={planForm.name} onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })} required className="input-field border p-2 rounded" />
-                                    <input type="number" placeholder="Price" value={planForm.price} onChange={(e) => setPlanForm({ ...planForm, price: e.target.value })} required className="input-field border p-2 rounded" />
-                                    <input placeholder="Duration (month/year)" value={planForm.duration} onChange={(e) => setPlanForm({ ...planForm, duration: e.target.value })} className="input-field border p-2 rounded" />
-                                    <input placeholder="Button Text" value={planForm.buttonText} onChange={(e) => setPlanForm({ ...planForm, buttonText: e.target.value })} className="input-field border p-2 rounded" />
-                                </div>
-                                <textarea placeholder="Features (comma separated)" value={planForm.features} onChange={(e) => setPlanForm({ ...planForm, features: e.target.value })} className="w-full border p-2 rounded h-24" />
-                                <label className="flex items-center gap-2">
-                                    <input type="checkbox" checked={planForm.recommended} onChange={(e) => setPlanForm({ ...planForm, recommended: e.target.checked })} />
-                                    Recommend this plan?
-                                </label>
-                                <button type="submit" className="w-full bg-primary text-white py-3 rounded-lg font-bold">Add Plan</button>
-                            </form>
-                        </div>
-
-                        {/* Plan List */}
-                        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-                            <h2 className="text-xl font-bold mb-6">Manage Plans</h2>
-                            <div className="space-y-4">
-                                {plans.map(plan => (
-                                    <div key={plan._id} className="flex justify-between items-center p-4 border rounded-lg">
-                                        <div>
-                                            <h3 className="font-bold">{plan.name} {plan.recommended && <span className="text-xs bg-yellow-100 text-yellow-800 px-2 rounded">Recommended</span>}</h3>
-                                            <p className="text-sm text-neutral-500">₹{plan.price}/{plan.duration}</p>
-                                        </div>
-                                        <button onClick={() => deletePlan(plan._id)} className="text-red-500"><Trash2 /></button>
-                                    </div>
+                                        </td>
+                                        <td className="p-4"><span className="bg-neutral-100 px-2 py-1 rounded text-xs uppercase font-bold">{u.role}</span></td>
+                                        <td className="p-4 text-sm text-neutral-500">{new Date(u.createdAt).toLocaleDateString()}</td>
+                                        <td className="p-4">
+                                            <button onClick={() => deleteUser(u._id)} className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
+                                        </td>
+                                    </tr>
                                 ))}
-                            </div>
-                        </div>
-                    </>
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
+                {/* Project Content */}
+                {activeTab === 'projects' && (
+                    <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+                        <table className="w-full text-left">
+                            <thead className="bg-neutral-50 border-b border-neutral-200">
+                                <tr>
+                                    <th className="p-4 font-semibold text-neutral-600">Project</th>
+                                    <th className="p-4 font-semibold text-neutral-600">Owner</th>
+                                    <th className="p-4 font-semibold text-neutral-600">Stats</th>
+                                    <th className="p-4 font-semibold text-neutral-600">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {projects.map(p => (
+                                    <tr key={p._id} className="border-b border-neutral-100 hover:bg-neutral-50">
+                                        <td className="p-4 font-bold text-neutral-900">{p.title}</td>
+                                        <td className="p-4 text-sm">{p.owner?.username || "Unknown"}</td>
+                                        <td className="p-4 text-xs text-neutral-500">
+                                            {p.analytics?.views || 0} Views • {p.stars || 0} Stars
+                                        </td>
+                                        <td className="p-4">
+                                            <button onClick={() => deleteProject(p._id)} className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );

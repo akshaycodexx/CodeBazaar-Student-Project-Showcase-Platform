@@ -1,83 +1,76 @@
-
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-//AuthCOntext object banao ye auth related values ko global provide krega
+const AuthContextObject = createContext({
+    user: null,
+    isLoggedIn: false,
+    login: async () => { },
+    logout: async () => { },
+    isLoading: true,
+});
 
-const AuthContextObject=createContext({
-    user:null,
-    isLoggedIn:false,
-    login:async()=>{},
-    logout:async()=>{},
-    isLoading:true,
+function AuthContext({ children }) {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
+    const API_URL = import.meta.env.VITE_API_URL;
 
-})
-
-
-// ye children props accpet krega ,jise ye 'AuthCOntextObject.provider ke andar render krega
-//is trah wrap kiye giye object ke har ke component context ko access kar payega
-
-function AuthContext({children}) {
-    const[isLoggedIn,setIsLoggedIn]=useState(false); //login stutes
-    const[user,setUser]=useState(null); //user ka data
-    const[isLoading,setIsLoading]=useState(true);
-
-    const navigate=useNavigate();
-
-
-    //useEffect laga rhe hai login hai ya nhi check karne ke liye initial
-
-    useEffect(()=>{
-        const checkLoginStatus=async()=>{
+    useEffect(() => {
+        const checkLoginStatus = async () => {
             try {
-                //backend api ko call kro take cookie meain jwt token ko verify krega
-           const response= await axios.get(`/api/check-auth-status`,{
-                    withCredentials:true   // ye important hai brower ko cookie (including httpOnly cookie) request ke sath bhejne ke liye{like https://}
-
-                });
-                //agar respose me isLoggedIn true aata hai to authanticate hai\
-                if(response.data.isLoggedIn){
+                const response = await axios.get(`${API_URL}/api/check-auth-status`, { withCredentials: true });
+                if (response.data.isLoggedIn) {
                     setIsLoggedIn(true);
-                    setUser(response.data.user)
-                }else{
+                    setUser(response.data.user);
+                } else {
                     setIsLoggedIn(false);
-                    setUser(null)
+                    setUser(null);
                 }
-                
             } catch (error) {
-
-                //agar api me kuch error aaya to 
-                 setIsLoggedIn(false);
-                 setUser(null)
-                 console.error("Login status check failed:" ,error)
-
-            } finally{
+                setIsLoggedIn(false);
+                setUser(null);
+            } finally {
                 setIsLoading(false);
             }
         };
         checkLoginStatus();
-    },[]);
+    }, []);
 
-    //login function :Email and password ko lekar backend api ko call karen
-
-    const login= async(email,password)=>{
+    const login = async (email, password) => {
         try {
-            setIsLoading(false);
-            const response= await axios.post(`/api/signin`,{email,password},{
-                withCredentials:true //cookie vejne ke liye
-            })
-            
+            setIsLoading(true);
+            await axios.post(`${API_URL}/api/signin`, { email, password }, { withCredentials: true });
+            const response = await axios.get(`${API_URL}/api/check-auth-status`, { withCredentials: true });
+            setIsLoggedIn(true);
+            setUser(response.data.user);
+            navigate('/'); // Navigate to home
         } catch (error) {
-            
+            console.error("Login failed", error);
+            throw error;
+        } finally {
+            setIsLoading(false);
         }
-    }
+    };
 
+    const logout = async () => {
+        try {
+            await axios.post(`${API_URL}/api/logout`, {}, { withCredentials: true });
+            setIsLoggedIn(false);
+            setUser(null);
+            navigate('/signin');
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-  return (
-    <div>
-      
-    </div>
-  )
+    return (
+        <AuthContextObject.Provider value={{ user, isLoggedIn, login, logout, isLoading }}>
+            {children}
+        </AuthContextObject.Provider>
+    );
 }
 
-export default AuthContext
+export { AuthContextObject };
+export default AuthContext;
