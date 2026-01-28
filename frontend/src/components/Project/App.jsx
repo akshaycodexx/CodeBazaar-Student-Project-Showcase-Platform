@@ -6,12 +6,11 @@ import Footer from '../Footer';
 
 function App() {
   return (
-    <div>
+    <div className="min-h-screen bg-neutral-50 font-sans">
       <UploadSection />
       <FilterBar />
       <ProjectList />
-      <Footer/>
-      
+      <Footer />
     </div>
   );
 }

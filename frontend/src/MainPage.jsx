@@ -1,6 +1,4 @@
 import React from "react";
-import "./App.css";
-
 import HeroSection from "./components/HeroSection";
 import Features from "./components/Features";
 import ProjectsShowcase from "./components/ProjectsShowcase";
@@ -11,7 +9,7 @@ import Footer from "./components/Footer";
 
 function MainPage({ tutorials, setTutorials, user, fetchTutorials }) {
   return (
-    <div className="app">
+    <div className="min-h-screen bg-neutral-50 font-sans text-neutral-900">
       <HeroSection />
       <Features />
       <ProjectsShowcase />

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Signup.css";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
 
 function Signup() {
   const navigate = useNavigate();
   const [role, setRole] = useState("student");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formdata, setFormdata] = useState({
     fullName: "",
@@ -38,6 +38,7 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const data = new FormData();
     for (const key in formdata) {
@@ -53,161 +54,113 @@ function Signup() {
     data.append("role", role);
 
     try {
-      const response = await axios.post(`${API_URL}/api/signup`, data, {
+      await axios.post(`${API_URL}/api/signup`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials:true
+        withCredentials: true
       });
 
-      console.log("Server Response:", response.data);
       alert("Signup Successful!");
       navigate("/signin");
     } catch (error) {
       console.error("Signup Error:", error.response?.data || error.message);
       alert("Signup failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="signup-container">
-      <form
-        className="signup-form"
-        onSubmit={handleSubmit}
-        encType="multipart/form-data"
-      >
-        <h2>Create Your CodeBazaar Account</h2>
-        <label htmlFor="Profile">Profile Picture :</label>
-        <input type="file" accept="image/*" name="profilePicture" onChange={handleProfilePicChange} />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-white py-12 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-neutral-100">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-neutral-900">Create Account</h2>
+          <p className="text-neutral-500 mt-2">Join CodeBazaar today</p>
+        </div>
 
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Full Name"
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="mobile"
-          placeholder="Mobile"
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-          onChange={handleChange}
-        />
+        <form className="space-y-6" onSubmit={handleSubmit} encType="multipart/form-data">
 
-        <select
-          name="role"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          required
-        >
-          <option value="student">Student</option>
-          <option value="recuritor">Recruiter</option>
-          <option value="admin">Admin</option>
-        </select>
+          <div className="flex flex-col items-center mb-6">
+            <label className="block text-sm font-medium text-neutral-700 mb-2">Profile Picture</label>
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-neutral-300 border-dashed rounded-full cursor-pointer bg-neutral-50 hover:bg-neutral-100 transition-colors">
+                {profilePicture ? (
+                  <img src={URL.createObjectURL(profilePicture)} alt="Preview" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <span className="text-xs text-neutral-500">Upload</span>
+                  </div>
+                )}
+                <input type="file" className="hidden" accept="image/*" name="profilePicture" onChange={handleProfilePicChange} />
+              </label>
+            </div>
+          </div>
 
-        {role === "student" && (
-          <>
-            <input
-              type="text"
-              name="collegeName"
-              placeholder="College Name"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <input type="text" name="fullName" placeholder="Full Name" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+            <input type="email" name="email" placeholder="Email Address" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+            <input type="text" name="mobile" placeholder="Mobile Number" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+            <input type="text" name="username" placeholder="Username" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+          </div>
+
+          <input type="password" name="password" placeholder="Password" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">I am a...</label>
+            <select
+              name="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
               required
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="branch"
-              placeholder="Branch"
-              required
-              onChange={handleChange}
-            />
-            <input
-              type="url"
-              name="github"
-              placeholder="GitHub URL"
-              onChange={handleChange}
-            />
-            <input
-              type="url"
-              name="linkedin"
-              placeholder="LinkedIn URL"
-              onChange={handleChange}
-            />
-          </>
-        )}
+              className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none bg-white"
+            >
+              <option value="student">Student</option>
+              <option value="recuritor">Recruiter</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
 
-        {role === "recuritor" && (
-          <>
-            <input
-              type="text"
-              name="companyName"
-              placeholder="Company Name"
-              required
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="designation"
-              placeholder="Designation"
-              onChange={handleChange}
-            />
-            <input
-              type="url"
-              name="companyWebsite"
-              placeholder="Company Website"
-              onChange={handleChange}
-            />
-            <input
-              type="url"
-              name="recruiterLinkedin"
-              placeholder="LinkedIn"
-              onChange={handleChange}
-            />
-          </>
-        )}
+          {role === "student" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+              <input type="text" name="collegeName" placeholder="College Name" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="text" name="branch" placeholder="Branch" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="url" name="github" placeholder="GitHub Profile URL" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="url" name="linkedin" placeholder="LinkedIn Profile URL" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+            </div>
+          )}
 
-        {role === "admin" && (
-          <>
-            <input
-              type="text"
-              name="adminDept"
-              placeholder="Admin Department"
-              required
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="adminCode"
-              placeholder="Admin Code"
-              onChange={handleChange}
-            />
-          </>
-        )}
+          {role === "recuritor" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+              <input type="text" name="companyName" placeholder="Company Name" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="text" name="designation" placeholder="Designation" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="url" name="companyWebsite" placeholder="Company Website" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="url" name="recruiterLinkedin" placeholder="LinkedIn Profile URL" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+            </div>
+          )}
 
-        <button type="submit">Sign Up</button>
-      </form>
+          {role === "admin" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+              <input type="text" name="adminDept" placeholder="Department" required onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+              <input type="text" name="adminCode" placeholder="Admin Code" onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary outline-none" />
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Creating Account...' : 'Sign Up'}
+          </button>
+
+          <div className="text-center mt-4">
+            <Link to="/signin" className="text-primary hover:text-primary-dark font-medium hover:underline text-sm">
+              Already have an account? Sign In
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

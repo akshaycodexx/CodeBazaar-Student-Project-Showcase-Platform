@@ -7,6 +7,8 @@ const cloudinary = require("../utils/cloudinary");
 const mongoose = require("mongoose");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+const { body } = require("express-validator");
+const validate = require("../middleware/validate");
 
 // Helper function to upload to Cloudinary from buffer
 const uploadToCloudinary = (fileBuffer) => {
@@ -36,57 +38,29 @@ router.get("/getallprojects", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: "Project not found" });
     res.json(project);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch project" });
   }
 });
 
-// ✅ POST new project with two images
-// router.post(
-//   "/uploadproject",
-//   upload.fields([{ name: "coverImage" }, { name: "logoImage" }]),
-//   async (req, res) => {
-//     try {
-//       if (!req.files.coverImage || !req.files.logoImage) {
-//         return res.status(400).json({ message: "Both images are required" });
-//       }
-
-//       const coverImageUrl = await uploadToCloudinary(req.files.coverImage[0].buffer);
-//       const logoUrl = await uploadToCloudinary(req.files.logoImage[0].buffer);
-
-//       const newProject = new Project({
-//       title: req.body.title,
-//         description: req.body.description,
-//         logoUrl,
-//         coverImageUrl,
-//         price: req.body.price,
-//         owner: req.body.owner,
-//         tags: req.body.tags ? req.body.tags.split(",") : [],
-//         learning: req.body.learning ? req.body.learning.split(",") : [],
-//         stars: req.body.stars || 0,
-//         likes: [], // default empty
-//         Comment: [], //
-//       });
-
-//       await newProject.save();
-//       res.status(201).json(newProject);
-//     } catch (error) {
-//       console.error("Upload error:", error);
-//       res.status(500).json({ error: "Upload failed" });
-//     }
-//   }
-// );
 // POST - Upload Project
 router.post(
   "/uploadproject",
   upload.fields([{ name: "coverImage" }, { name: "logoImage" }]),
+  [
+    body("title").notEmpty().withMessage("Title is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("price").notEmpty().isNumeric().withMessage("Price is required and must be a number"),
+    validate
+  ],
   async (req, res) => {
     try {
       const { title, description, price, owner, tags, learning, stars } = req.body;
 
-      if (!req.files.coverImage || !req.files.logoImage) {
-        return res.status(400).json({ message: "Both images are required" });
+      if (!req.files || !req.files.coverImage || !req.files.logoImage) {
+        return res.status(400).json({ message: "Both cover and logo images are required" });
       }
 
       // Validate owner (convert to ObjectId if your schema expects it)

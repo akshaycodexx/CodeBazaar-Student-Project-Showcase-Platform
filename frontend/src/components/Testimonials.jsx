@@ -1,7 +1,4 @@
 import React from 'react';
-import './Testimonials.css';
-
-// ✅ Import images from src/images folder
 import img1 from '../images/Anubhaw.jpg';
 import img2 from '../images/AkshayKumarMandal_Stream_Casual.jpg';
 import img3 from '../images/saheb.jpg';
@@ -26,18 +23,21 @@ function Testimonials() {
   ];
 
   return (
-    <section className="testimonials">
-      <h2>What Our Users Say</h2>
-      <div className="testimonials-container">
-        {testimonials.map((t, index) => (
-          <div className="testimonial-card" key={index}>
-            <div className="testimonial-photo">
-              <img src={t.photo} alt={t.name} />
+    <section className="py-16 bg-neutral-50">
+      <div className="max-w-screen-xl mx-auto px-4 text-center">
+        <h2 className="text-3xl font-bold text-neutral-900 mb-10">What Our Users Say</h2>
+
+        <div className="flex flex-wrap justify-center gap-8">
+          {testimonials.map((t, index) => (
+            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 w-full max-w-sm flex flex-col items-center border border-neutral-100" key={index}>
+              <div className="w-20 h-20 mb-6 rounded-full overflow-hidden border-4 border-indigo-50 shadow-sm">
+                <img src={t.photo} alt={t.name} className="w-full h-full object-cover" />
+              </div>
+              <p className="text-neutral-600 italic text-lg leading-relaxed mb-6">“{t.feedback}”</p>
+              <h4 className="text-neutral-900 font-bold text-base">- {t.name}</h4>
             </div>
-            <p className="testimonial-feedback">“{t.feedback}”</p>
-            <h4 className="testimonial-name">- {t.name}</h4>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

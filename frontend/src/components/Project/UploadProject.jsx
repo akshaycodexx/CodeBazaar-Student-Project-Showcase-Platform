@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./UploadProject.css";
-
 const API_URL = import.meta.env.VITE_API_URL;
 
 function UploadProject() {
@@ -13,11 +11,11 @@ function UploadProject() {
     learning: ""
   });
 
-  const [userId, setUserId] = useState("");   // logged-in user ID
+  const [userId, setUserId] = useState("");
   const [logo, setLogo] = useState(null);
   const [cover, setCover] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch logged-in user info so we can attach their _id as owner
   useEffect(() => {
     axios
       .get(`${API_URL}/api/me`, { withCredentials: true })
@@ -33,12 +31,13 @@ function UploadProject() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const data = new FormData();
       data.append("title", form.title);
       data.append("description", form.description);
       data.append("price", form.price);
-      data.append("owner", userId);  // Send _id (not name)
+      data.append("owner", userId);
       data.append("tags", form.tags);
       data.append("learning", form.learning);
       data.append("logoImage", logo);
@@ -63,63 +62,110 @@ function UploadProject() {
     } catch (err) {
       alert("Upload failed! Check console for details.");
       console.error("Upload error:", err.response?.data || err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const inputClass = "w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors bg-white";
+  const labelClass = "block text-sm font-medium text-neutral-700 mb-2";
+
   return (
-    <div className="upload-container">
-      <h2>Upload Project</h2>
-      <form className="upload-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Title"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-          required
-        />
-        <textarea
-          placeholder="Description"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Price"
-          value={form.price}
-          onChange={(e) => setForm({ ...form, price: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Tags (comma separated)"
-          value={form.tags}
-          onChange={(e) => setForm({ ...form, tags: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Learning Points (comma separated)"
-          value={form.learning}
-          onChange={(e) => setForm({ ...form, learning: e.target.value })}
-        />
+    <div className="min-h-screen bg-neutral-50 py-12 px-4 flex justify-center">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-neutral-100">
+        <h2 className="text-3xl font-bold text-neutral-900 text-center mb-8">Upload Your Project</h2>
 
-        <label>Upload Logo</label>
-        <input
-          type="file"
-          onChange={(e) => setLogo(e.target.files[0])}
-          required
-        />
-        <label>Upload Cover Image</label>
-        <input
-          type="file"
-          onChange={(e) => setCover(e.target.files[0])}
-          required
-        />
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label className={labelClass}>Project Title</label>
+            <input
+              type="text"
+              placeholder="e.g. AI-Powered Chatbot"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              required
+              className={inputClass}
+            />
+          </div>
 
-        <button type="submit" disabled={!userId}>
-          {userId ? "Submit Project" : "Loading user..."}
-        </button>
-      </form>
+          <div>
+            <label className={labelClass}>Description</label>
+            <textarea
+              placeholder="Describe your project features, tech stack, etc."
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              required
+              className={`${inputClass} min-h-[120px]`}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className={labelClass}>Price (₹)</label>
+              <input
+                type="number"
+                placeholder="e.g. 499"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                required
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Tags</label>
+              <input
+                type="text"
+                placeholder="React, Node.js, MongoDB"
+                value={form.tags}
+                onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Learning Points</label>
+            <input
+              type="text"
+              placeholder="Authentication, API handling, State Management"
+              value={form.learning}
+              onChange={(e) => setForm({ ...form, learning: e.target.value })}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-neutral-50 rounded-xl border border-neutral-100">
+            <div>
+              <label className={labelClass}>Project Logo</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setLogo(e.target.files[0])}
+                required
+                className="block w-full text-sm text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-primary hover:file:bg-indigo-100 cursor-pointer"
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Cover Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setCover(e.target.files[0])}
+                required
+                className="block w-full text-sm text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-primary hover:file:bg-indigo-100 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={!userId || isLoading}
+            className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+          >
+            {userId ? (isLoading ? "Uploading..." : "Submit Project") : "Loading user details..."}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

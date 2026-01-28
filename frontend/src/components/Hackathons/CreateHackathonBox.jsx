@@ -1,54 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import "./CreateHackathonBox.css";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 
 function CreateHackathonBox() {
-  const [isLoggedIn,setIsLoggedIn]=useState(false);
-  const [isLoading,setIsLoading]=useState(true);
-  const navigate=useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-  const checklogin = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/check-auth-status`, {
-        withCredentials: true,
-      });
-      if (response.data.isLoggedIn) {
-        setIsLoggedIn(true);
-      } else {
+  useEffect(() => {
+    const checklogin = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/check-auth-status`, {
+          withCredentials: true,
+        });
+        setIsLoggedIn(response.data.isLoggedIn);
+      } catch (error) {
         setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      setIsLoggedIn(false);
-      console.error(`Login status check failed: ${error}`);
-    } finally {
-      setIsLoading(false);
+    };
+    checklogin();
+  }, []);
+
+  const handleClicked = () => {
+    if (isLoading) {
+      alert('Please wait while login status is being checked!');
+      return;
+    }
+    if (isLoggedIn) {
+      navigate("/hackSignup");
+    } else {
+      alert('Please login to upload Hackathon!');
     }
   };
-  checklogin();
-}, []);
-
-
-  const handleClicked=()=>{
-    if(isLoading){
-      alert(' Please wait While login status being Checked!');
-      return ;
-    }
-    if(isLoggedIn){
-      navigate("/hackSignup")
-    }
-    else{
-      alert('Please login to upload Hackathon!')
-    }
-  }
-
 
   return (
-    <div className="hackathon-container">
-      <p className="quote-text">Build. Collaborate. Compete. Create now.</p>
-      <button className="create-button" onClick={handleClicked} disabled={isLoading}>Create Hackathon</button>
+    <div className="bg-indigo-600 pattern-bg py-12 px-4 text-center text-white">
+      <div className="max-w-2xl mx-auto">
+        <p className="text-2xl md:text-3xl font-bold mb-8">Build. Collaborate. Compete. Create now.</p>
+        <button
+          className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105"
+          onClick={handleClicked}
+          disabled={isLoading}
+        >
+          Create Hackathon
+        </button>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const errorHandler = require("./middleware/errorHandler");
 
 const authRoutes = require("./router/authRoute");
 const hackathonRoutes = require("./router/hackathonRoutes");
@@ -14,6 +17,17 @@ const auth = require("./middleware/auth");
 
 const app = express();
 connectDb();
+
+// Use Helmet for security headers
+app.use(helmet());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
 app.use(express.json());
 
 // ✅ Allowed Origins
@@ -54,6 +68,9 @@ app.get("/api/check-auth-status", auth, (req, res) => {
 app.get("/api/me", auth, (req, res) => {
   res.status(200).json(req.user);
 });
+
+// Global Error Handler
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
