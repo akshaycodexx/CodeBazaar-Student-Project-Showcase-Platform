@@ -72,6 +72,7 @@ app.use("/api/leaderboard", require("./router/leaderboardRoutes")); // Leaderboa
 app.use("/api/jobs", require("./router/jobRoutes")); // Jobs
 app.use("/api/interviews", require("./router/interviewRoutes")); // Mock Interviews
 app.use("/api/admin", require("./router/adminRoutes")); // Admin Panel
+app.use("/api/ai", require("./router/aiRoutes")); // AI Resume Builder
 app.use("/api", authRoutes);
 
 // ✅ Auth check route
@@ -88,7 +89,13 @@ app.get("/api/me", auth, (req, res) => {
 app.use(errorHandler);
 
 // Start Server
+const http = require("http");
+const { initSocket } = require("./socket");
+
+const server = http.createServer(app);
+initSocket(server);
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

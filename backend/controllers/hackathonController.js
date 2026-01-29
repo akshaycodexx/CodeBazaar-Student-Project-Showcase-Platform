@@ -21,6 +21,11 @@ exports.createHackathon = async (req, res) => {
       logoImage,
       createdBy: req.user._id,
     });
+
+    // Gamification
+    const { awardPoints } = require("../utils/gamification");
+    awardPoints(req.user._id, 30, "Hosted a Hackathon");
+
     res.status(201).json(hackathon);
   } catch (error) {
     res.status(400).json({ message: error.message });

@@ -1,28 +1,44 @@
 const Interview = require("../models/Interview");
 const User = require("../models/User");
 
+// Problem Bank
+const PROBLEMS = {
+    DSA: [
+        { title: "Two Sum", description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.", starterCode: "function twoSum(nums, target) {\n  // Write your code here\n}" },
+        { title: "Reverse String", description: "Write a function that reverses a string. The input string is given as an array of characters.", starterCode: "function reverseString(s) {\n  // Write your code here\n}" },
+        { title: "Valid Palindrome", description: "A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.", starterCode: "function isPalindrome(s) {\n  // Write your code here\n}" }
+    ],
+    Frontend: [
+        { title: "Counter Component", description: "Create a React Counter component that increments/decrements on button click.", starterCode: "import React, { useState } from 'react';\n\nexport default function Counter() {\n  // Write your code here\n}" },
+        { title: "Fetch Data", description: "Write a function to fetch data from https://api.example.com/data and return the JSON response.", starterCode: "async function getData() {\n  // Write your code here\n}" }
+    ]
+};
+
 // Schedule Interview
 exports.scheduleInterview = async (req, res) => {
     try {
         const { mentorId, date, topic } = req.body;
 
-        // In a real app, verify mentor availability here
+        // Pick random problem based on topic or default to DSA
+        const topicProblems = PROBLEMS[topic] || PROBLEMS["DSA"];
+        const randomProblem = topicProblems[Math.floor(Math.random() * topicProblems.length)];
+
+        // If mentorId is not provided, assume Self-Practice (User is both Student and Mentor)
+        // Or assign a system bot ID? Let's use user ID for now to allow "Solo Practice"
+        const finalMentorId = mentorId || req.user.id;
 
         const interview = new Interview({
-            mentor: mentorId,
+            mentor: finalMentorId,
             student: req.user.id,
-            date,
+            date: date || new Date(), // Default to now if not provided
             topic,
-            problem: {
-                title: "Two Sum",
-                description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-                starterCode: "function twoSum(nums, target) {\n  // Write your code here\n}"
-            }
+            problem: randomProblem
         });
 
         await interview.save();
         res.status(201).json(interview);
     } catch (error) {
+        console.error("Schedule error:", error);
         res.status(500).json({ message: "Scheduling failed" });
     }
 };

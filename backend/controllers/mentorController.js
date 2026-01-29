@@ -1,64 +1,30 @@
-const Mentor = require("../models/MentorModel");
-const cloudinary = require("../utils/cloudinary");
-const streamifier = require("streamifier");
-
-// Upload helper
-const uploadToCloudinary = (fileBuffer) => {
-    return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-            { folder: "CodeBazaarMentors" },
-            (error, result) => {
-                if (error) reject(error);
-                else resolve(result.secure_url);
-            }
-        );
-        streamifier.createReadStream(fileBuffer).pipe(stream);
-    });
-};
-
-// Create Mentor
-exports.createMentor = async (req, res) => {
-    try {
-        const { name, role, company, skills, linkedin, description, pricePerSession } = req.body;
-        let imageUrl = "";
-
-        if (req.file) {
-            imageUrl = await uploadToCloudinary(req.file.buffer);
-        }
-
-        const newMentor = new Mentor({
-            name,
-            role,
-            company,
-            image: imageUrl,
-            skills: skills ? skills.split(',').map(s => s.trim()) : [],
-            linkedin,
-            description,
-            pricePerSession
-        });
-
-        await newMentor.save();
-        res.status(201).json(newMentor);
-    } catch (error) {
-        console.error("Create Mentor Error:", error);
-        res.status(500).json({ message: "Server error" });
-    }
-};
+const User = require("../models/User");
 
 // Get All Mentors
+// Fetches all users with role 'mentor'
 exports.getAllMentors = async (req, res) => {
     try {
-        const mentors = await Mentor.find();
+        const mentors = await User.find({ role: 'mentor' })
+            .select("fullName role designation companyName skills linkedin profilePicture pricePerSession createdAt");
+
+        // Map to match frontend expectations or update frontend. 
+        // Let's return raw users and update frontend to map them.
         res.json(mentors);
     } catch (error) {
+        console.error("Fetch mentors error:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
 
-// Delete Mentor
+// Create Mentor is irrelevant if we use Signup flow. 
+// If Admin needs to manually add, we can keep logic but point to User model.
+// But mostly we rely on Signup. 
+// I'll assume users sign up as mentors.
+
+// Delete Mentor (Admin only) - keeps deleting user
 exports.deleteMentor = async (req, res) => {
     try {
-        await Mentor.findByIdAndDelete(req.params.id);
+        await User.findByIdAndDelete(req.params.id);
         res.json({ message: "Mentor deleted" });
     } catch (error) {
         res.status(500).json({ message: "Server error" });

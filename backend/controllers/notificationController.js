@@ -26,10 +26,21 @@ exports.markAsRead = async (req, res) => {
 };
 
 // Internal Helper to Create Notification
+const { getIO } = require("../socket");
+
 exports.createNotification = async (userId, type, message, link) => {
     try {
         const notif = new Notification({ user: userId, type, message, link });
         await notif.save();
+
+        // Emit Socket Event
+        try {
+            const io = getIO();
+            io.to(userId.toString()).emit("notification", notif);
+        } catch (socketErr) {
+            console.error("Socket emit failed", socketErr);
+        }
+
     } catch (err) {
         console.error("Notification creation failed", err);
     }

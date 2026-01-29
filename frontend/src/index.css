@@ -21,7 +21,7 @@
   }
 
   body {
-    @apply font-['Outfit'] bg-neutral-50 text-neutral-900 overflow-x-hidden;
+    @apply font-['Outfit'] bg-neutral-50 text-neutral-900 dark:bg-[#0a0a0a] dark:text-neutral-100 overflow-x-hidden transition-colors duration-300;
   }
 
   /* Custom Scrollbar */
@@ -34,15 +34,16 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-neutral-300 rounded-full hover:bg-neutral-400 transition-colors;
+    @apply bg-neutral-300 dark:bg-neutral-700 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition-colors;
   }
 }
 
 @layer components {
   .glass {
-    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+    @apply bg-white/70 dark:bg-black/60 backdrop-blur-lg border border-white/20 dark:border-white/10 shadow-xl;
   }
 
+  /* Removed duplicate glass-dark as glass handles both now, or keep alias */
   .glass-dark {
     @apply bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl;
   }

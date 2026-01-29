@@ -119,57 +119,79 @@ const UserProfile = () => {
     );
 };
 
-// Simple sub-component for Purchase History
+// Enhanced Purchase History Component
 const PurchaseHistory = ({ userId }) => {
     const [orders, setOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Attempt to fetch orders. Backend protects this route, so it only succeeds if viewing OWN profile (and logged in).
-        // Actually backend 'getUserOrders' returns req.user's orders. 
-        // So if I am logged in as User A, and viewing User B's profile, this component will fetch User A's orders if I mount it!
-        // We must ONLY mount this if userId matched logged in user.
-        // Since we don't have loggedInUser easily accessible here without context/prop drill, let's try a safe approach.
-        // We'll fetch 'me' first.
-
-        const checkAndFetch = async () => {
+        const fetchOrders = async () => {
             try {
+                // Verify identity first
                 const meRes = await axios.get(`${API_URL}/api/me`, { withCredentials: true });
                 if (meRes.data && meRes.data._id === userId) {
                     const res = await axios.get(`${API_URL}/api/orders`, { withCredentials: true });
                     setOrders(res.data);
                 }
             } catch (e) {
-                // Not logged in or not own profile
+                // Silent fail if not owner
+            } finally {
+                setIsLoading(false);
             }
         };
-        checkAndFetch();
+        fetchOrders();
     }, [userId]);
 
+    if (isLoading) return <div className="py-8 text-center text-neutral-400">Loading history...</div>;
     if (orders.length === 0) return null;
 
     return (
-        <div className="border-t border-neutral-200 pt-8">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-6">Purchase History</h2>
-            <div className="space-y-4">
+        <div className="border-t border-neutral-200 dark:border-neutral-800 pt-10 mt-10">
+            <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-8 flex items-center gap-3">
+                <ShoppingBag className="w-8 h-8 text-indigo-500" /> Purchase History
+            </h2>
+            <div className="grid gap-6">
                 {orders.map(order => (
-                    <div key={order._id} className="bg-white p-4 rounded-xl border border-neutral-200 shadow-sm">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm text-neutral-500">Ordered on {new Date(order.createdAt).toLocaleDateString()}</span>
-                            <span className={`text-xs px-2 py-1 rounded-full ${order.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                                {order.status.toUpperCase()}
-                            </span>
+                    <div key={order._id} className="bg-white dark:bg-neutral-800 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-lg hover:shadow-xl transition-shadow">
+                        <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 border-b border-neutral-100 dark:border-neutral-700 pb-4">
+                            <div>
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">Order ID: <span className="font-mono text-neutral-700 dark:text-neutral-300">#{order._id.slice(-6).toUpperCase()}</span></p>
+                                <p className="text-xs text-neutral-400 mt-1">{new Date(order.createdAt).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            </div>
+                            <div className="flex items-center gap-4 mt-4 md:mt-0">
+                                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${order.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700'}`}>
+                                    {order.status}
+                                </span>
+                                <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">₹{order.amount}</span>
+                            </div>
                         </div>
-                        <div className="space-y-2">
+
+                        <div className="space-y-4">
                             {order.projects.map(p => (
-                                <div key={p._id} className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-neutral-100 rounded-md overflow-hidden">
-                                        {/* Ideally project cover image */}
+                                <div key={p._id} className="flex items-center gap-4 p-3 bg-neutral-50 dark:bg-neutral-900/50 rounded-xl">
+                                    <img
+                                        src={p.coverImageUrl}
+                                        alt={p.title}
+                                        className="w-16 h-16 object-cover rounded-lg shadow-sm"
+                                    />
+                                    <div className="flex-1">
+                                        <h4 className="font-bold text-neutral-900 dark:text-white mb-1">{p.title}</h4>
+                                        <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-1">{p.description}</p>
                                     </div>
-                                    <span className="font-medium text-neutral-800">{p.title || "Project"}</span>
+
+                                    {order.status === 'completed' && (
+                                        <a
+                                            href={p.githubLink || p.liveDemoLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity"
+                                        >
+                                            <Github className="w-4 h-4" /> <span className="hidden md:inline">Access Code</span>
+                                        </a>
+                                    )}
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-2 text-right font-bold text-primary">Total: ₹{order.amount}</div>
                     </div>
                 ))}
             </div>

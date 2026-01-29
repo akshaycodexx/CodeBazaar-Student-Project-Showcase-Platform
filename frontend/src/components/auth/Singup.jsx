@@ -2,9 +2,28 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { UserPlus, Upload, User, Mail, Smartphone, Lock, Briefcase, Globe, Code } from "lucide-react";
+import { UserPlus, Upload, User, Mail, Smartphone, Lock, Briefcase, Globe, Code, DollarSign } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+function InputField({ icon: Icon, type = "text", name, placeholder, value, onChange }) {
+  return (
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        {Icon && <Icon className="h-5 w-5 text-gray-400" />}
+      </div>
+      <input
+        type={type}
+        name={name}
+        required
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-500 transition-all"
+      />
+    </div>
+  );
+}
 
 function Signup() {
   const navigate = useNavigate();
@@ -45,18 +64,6 @@ function Signup() {
     }
   };
 
-  const InputField = ({ icon: Icon, type = "text", name, placeholder }) => (
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        {Icon && <Icon className="h-5 w-5 text-gray-400" />}
-      </div>
-      <input
-        type={type} name={name} required placeholder={placeholder} onChange={handleChange}
-        className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-500 transition-all"
-      />
-    </div>
-  );
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 relative py-12 px-4">
       <motion.div
@@ -83,12 +90,12 @@ function Signup() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InputField icon={User} name="fullName" placeholder="Full Name" />
-            <InputField icon={Mail} type="email" name="email" placeholder="Email" />
-            <InputField icon={Smartphone} name="mobile" placeholder="Mobile" />
-            <InputField icon={User} name="username" placeholder="Username" />
+            <InputField icon={User} name="fullName" placeholder="Full Name" value={formdata.fullName} onChange={handleChange} />
+            <InputField icon={Mail} type="email" name="email" placeholder="Email" value={formdata.email} onChange={handleChange} />
+            <InputField icon={Smartphone} name="mobile" placeholder="Mobile" value={formdata.mobile} onChange={handleChange} />
+            <InputField icon={User} name="username" placeholder="Username" value={formdata.username} onChange={handleChange} />
           </div>
-          <InputField icon={Lock} type="password" name="password" placeholder="Password" />
+          <InputField icon={Lock} type="password" name="password" placeholder="Password" value={formdata.password} onChange={handleChange} />
 
           {/* Role Selection */}
           <div>
@@ -109,32 +116,32 @@ function Signup() {
           <motion.div key={role} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {role === 'student' && (
               <>
-                <InputField icon={Briefcase} name="collegeName" placeholder="College Name" />
-                <InputField icon={Code} name="branch" placeholder="Branch" />
-                <InputField icon={Globe} name="github" placeholder="GitHub URL" />
-                <InputField icon={Globe} name="linkedin" placeholder="LinkedIn URL" />
+                <InputField icon={Briefcase} name="collegeName" placeholder="College Name" value={formdata.collegeName} onChange={handleChange} />
+                <InputField icon={Code} name="branch" placeholder="Branch" value={formdata.branch} onChange={handleChange} />
+                <InputField icon={Globe} name="github" placeholder="GitHub URL" value={formdata.github} onChange={handleChange} />
+                <InputField icon={Globe} name="linkedin" placeholder="LinkedIn URL" value={formdata.linkedin} onChange={handleChange} />
               </>
             )}
             {role === 'recruiter' && (
               <>
-                <InputField icon={Briefcase} name="companyName" placeholder="Company Name" />
-                <InputField icon={User} name="designation" placeholder="Designation" />
-                <InputField icon={Globe} name="companyWebsite" placeholder="Company Website" />
-                <InputField icon={Globe} name="recruiterLinkedin" placeholder="LinkedIn" />
+                <InputField icon={Briefcase} name="companyName" placeholder="Company Name" value={formdata.companyName} onChange={handleChange} />
+                <InputField icon={User} name="designation" placeholder="Designation" value={formdata.designation} onChange={handleChange} />
+                <InputField icon={Globe} name="companyWebsite" placeholder="Company Website" value={formdata.companyWebsite} onChange={handleChange} />
+                <InputField icon={Globe} name="recruiterLinkedin" placeholder="LinkedIn" value={formdata.recruiterLinkedin} onChange={handleChange} />
               </>
             )}
             {role === 'mentor' && (
               <>
-                <InputField icon={Briefcase} name="companyName" placeholder="Current Company" />
-                <InputField icon={Code} name="skills" placeholder="Skills (comma separated)" />
-                <InputField icon={Globe} name="linkedin" placeholder="LinkedIn" />
-                <InputField icon={DollarSign} type="number" name="pricePerSession" placeholder="Price/Session (₹)" />
+                <InputField icon={Briefcase} name="companyName" placeholder="Current Company" value={formdata.companyName} onChange={handleChange} />
+                <InputField icon={Code} name="skills" placeholder="Skills (comma separated)" value={formdata.skills} onChange={handleChange} />
+                <InputField icon={Globe} name="linkedin" placeholder="LinkedIn" value={formdata.linkedin} onChange={handleChange} />
+                <InputField icon={DollarSign} type="number" name="pricePerSession" placeholder="Price/Session (₹)" value={formdata.pricePerSession} onChange={handleChange} />
               </>
             )}
             {role === 'admin' && (
               <>
-                <InputField icon={Briefcase} name="adminDept" placeholder="Department" />
-                <InputField icon={Lock} name="adminCode" placeholder="Secret Code" />
+                <InputField icon={Briefcase} name="adminDept" placeholder="Department" value={formdata.adminDept} onChange={handleChange} />
+                <InputField icon={Lock} name="adminCode" placeholder="Secret Code" value={formdata.adminCode} onChange={handleChange} />
               </>
             )}
           </motion.div>
@@ -154,8 +161,5 @@ function Signup() {
     </div>
   );
 }
-
-// Helper needed because Lucide icons are used in InputField
-import { DollarSign } from "lucide-react";
 
 export default Signup;

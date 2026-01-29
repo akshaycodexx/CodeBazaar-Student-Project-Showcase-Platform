@@ -49,6 +49,11 @@ const projectSchema = new mongoose.Schema({
     clicks: { type: Number, default: 0 }, // Click on Live Demo
     impressions: { type: Number, default: 0 }
   },
+  dailyAnalytics: [{
+    date: { type: String, required: true }, // Format: YYYY-MM-DD
+    views: { type: Number, default: 0 },
+    clicks: { type: Number, default: 0 }
+  }],
   stars: {
     type: Number,
     default: 0
@@ -61,7 +66,8 @@ const projectSchema = new mongoose.Schema({
   updates: [{
     title: String,
     description: String,
-    date: { type: Date, default: Date.now }
+    images: [String],
+    date: { type: Date, default: Date.now },
   }],
   // Array of comment objects
   comments: [{
@@ -78,6 +84,20 @@ const projectSchema = new mongoose.Schema({
       type: Date,
       default: Date.now
     }
+  }],
+  // GitHub Sync Data
+  readmeContent: { type: String, default: "" },
+  lastSyncedAt: { type: Date },
+  githubMetadata: {
+    stars: { type: Number, default: 0 },
+    forks: { type: Number, default: 0 },
+    lastCommit: { type: Date }
+  },
+  recentCommits: [{
+    message: String,
+    sha: String,
+    date: Date,
+    author: String
   }],
   createdAt: {
     type: Date,

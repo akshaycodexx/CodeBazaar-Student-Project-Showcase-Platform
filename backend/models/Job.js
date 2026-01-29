@@ -32,8 +32,14 @@ const jobSchema = new mongoose.Schema({
     },
     skills: [String],
     applicants: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        status: {
+            type: String,
+            enum: ["Applied", "Reviewing", "Interview", "Rejected", "Hired"],
+            default: "Applied"
+        },
+        resume: String,
+        appliedAt: { type: Date, default: Date.now }
     }],
     createdAt: {
         type: Date,
