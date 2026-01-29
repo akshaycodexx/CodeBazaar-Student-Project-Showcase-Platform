@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { API_URL } from "../config";
 import { SocketContext } from "./SocketContextValue";
 
-export const useSocket = () => useContext(SocketContext);
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);

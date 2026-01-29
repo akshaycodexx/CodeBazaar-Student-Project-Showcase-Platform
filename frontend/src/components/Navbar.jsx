@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Menu, User, Bell, Moon, Sun, X, LogOut, LayoutDashboard, HelpCircle, Briefcase, Trophy, ShoppingCart } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-import { useSocket } from '../context/SocketContext';
+import { useSocket } from '../context/SocketContextValue';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_URL } from '../config';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Navbar({ user, setuser }) {
   const navigate = useNavigate();
