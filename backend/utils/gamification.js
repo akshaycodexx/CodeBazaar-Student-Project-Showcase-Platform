@@ -11,7 +11,10 @@ const BADGES = [
 exports.awardPoints = async (userId, points, reason) => {
     try {
         const user = await User.findById(userId);
-        if (!user) return;
+        if (!user) {
+            console.warn(`Gamification: User ${userId} not found`);
+            return;
+        }
 
         user.points = (user.points || 0) + points;
 

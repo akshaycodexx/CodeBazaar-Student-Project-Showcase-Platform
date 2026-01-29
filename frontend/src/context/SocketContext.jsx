@@ -57,9 +57,16 @@ export const SocketProvider = ({ children }) => {
     const fetchNotifications = async () => {
         try {
             const res = await axios.get(`${API_URL}/api/notifications`, { withCredentials: true });
-            setNotifications(res.data);
-            setUnreadCount(res.data.filter(n => !n.read).length);
-        } catch (err) { console.error("Fetch notif failed"); }
+            if (Array.isArray(res.data)) {
+                setNotifications(res.data);
+                setUnreadCount(res.data.filter(n => !n.read).length);
+            } else {
+                setNotifications([]);
+            }
+        } catch (err) {
+            console.error("Fetch notif failed", err);
+            setNotifications([]);
+        }
     };
 
     const markRead = async () => {
