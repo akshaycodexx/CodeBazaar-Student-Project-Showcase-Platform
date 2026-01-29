@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Menu, User, Bell, Moon, Sun, X, LogOut, LayoutDashboard, HelpCircle, Briefcase, Trophy, ShoppingCart } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/ThemeContextValue';
 import { useSocket } from '../context/SocketContextValue';
 import { motion, AnimatePresence } from 'framer-motion';
 
