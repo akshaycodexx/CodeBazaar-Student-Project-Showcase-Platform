@@ -5,8 +5,7 @@ import { Menu, User, Bell, Moon, Sun, X, LogOut, LayoutDashboard, HelpCircle, Br
 import { useTheme } from '../context/ThemeContext';
 import { useSocket } from '../context/SocketContext';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL } from '../config';
 
 function Navbar({ user, setuser }) {
   const navigate = useNavigate();

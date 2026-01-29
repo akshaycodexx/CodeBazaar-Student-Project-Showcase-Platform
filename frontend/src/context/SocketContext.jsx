@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import toast from "react-hot-toast";
 import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL;
-const SocketContext = createContext();
+import { API_URL } from "../config";
+import { SocketContext } from "./SocketContextValue";
 
 export const useSocket = () => useContext(SocketContext);
 
@@ -15,8 +14,6 @@ export const SocketProvider = ({ children }) => {
 
     // Initialize Socket
     useEffect(() => {
-        // Check if user is logged in (from local storage or api check, but here we rely on the component using this to be protected or we check an auth token)
-        // For simplicity, we connect; auth happens via "join" event usually after login.
         const newSocket = io(API_URL);
         setSocket(newSocket);
 
@@ -34,7 +31,9 @@ export const SocketProvider = ({ children }) => {
                     socket.emit("join", res.data.user._id);
                     fetchNotifications(); // Initial fetch
                 }
-            } catch (e) { console.log("Socket: Not logged in"); }
+            } catch (e) {
+                // Not logged in, that's fine
+            }
         };
         checkAuth();
 
