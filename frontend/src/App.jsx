@@ -67,6 +67,18 @@ function App() {
   useEffect(() => {
     getuser();
     fetchTutorials();
+
+    // Global Error Listener for Toasts
+    const handleError = (msg) => toast.error(`Error: ${msg}`);
+    const handleRejection = (event) => toast.error(`Async Error: ${event.reason}`);
+
+    window.addEventListener('error', (e) => handleError(e.message));
+    window.addEventListener('unhandledrejection', handleRejection);
+
+    return () => {
+      window.removeEventListener('error', (e) => handleError(e.message));
+      window.removeEventListener('unhandledrejection', handleRejection);
+    };
   }, []);
 
   return (

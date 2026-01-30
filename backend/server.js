@@ -31,27 +31,8 @@ app.use(limiter);
 
 app.use(express.json());
 
-// ✅ Allowed Origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://code-bazaar-student-project-showcas.vercel.app",
-];
-
-// ✅ Proper CORS handling for multiple domains
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS blocked: ${origin}`));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
+// ✅ Enable Cross-Origin Resource Sharing (CORS)
+app.use(cors({ origin: true, credentials: true }));
 
 // ✅ Parse cookies
 app.use(cookieParser());
